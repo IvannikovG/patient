@@ -36,8 +36,6 @@
      :body patient}))
 
 
-
-
 (defn update-patient-page [request]
   (let [form-data (:body request)
         patient-id (Integer/parseInt (:id (:params request)))]
@@ -51,3 +49,12 @@
     (db/delete-patient patient-id)
     {:status 200
      :body (format "Patient with id %s was deleted" patient-id)}))
+
+
+(defn search-patients-page [request]
+ (let [search-params (:params request)
+       patients (vec (db/filter-patients-by search-params))]
+   {:status 200
+    :headers {"content-type" "application/json"}
+    :body patients}))
+

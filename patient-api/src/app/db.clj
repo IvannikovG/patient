@@ -104,7 +104,7 @@
   (update-pat form id :testpatient))
 
 
-;; DELETE function
+;; DELETE functions
 
 (defn delete-pat [id table-name]
   (j/delete! db-spec table-name ["id=?" id]))
@@ -114,3 +114,13 @@
 
 (defn delete-test-patient [id]
   (delete-pat id :testpatient))
+
+
+;; FILTERING
+
+(defn filter-by [search-config table-name]
+  "By {:gender female}"
+  (j/find-by-keys db-spec table-name search-config))
+
+(defn filter-patients-by [search-config]
+  (filter-by search-config :patient))

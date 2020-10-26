@@ -1,4 +1,4 @@
-(ns app-test
+(ns db-test
   (:require [clojure.test :as t :refer :all]
             [app.db :as db]
             [clj-time.core :as time]
@@ -41,6 +41,9 @@
   (testing(create-patient-test)
           (update-patient-test)))
 
+
+(defn patient-filter-by [& args]
+  )
 
 (use-fixtures :once db-table-fixture)
 
