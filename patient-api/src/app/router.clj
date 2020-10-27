@@ -5,6 +5,7 @@
             [ring.middleware.json :refer :all]
             [ring.middleware.params :refer [wrap-params]]
             [ring.middleware.keyword-params :refer [wrap-keyword-params]]
+            [jumblerg.middleware.cors :refer [wrap-cors]]
             [app.handlers :refer :all]
             [ring.logger :as logger]))
 
@@ -23,11 +24,20 @@
 (defn reloadable-app []
   (wrap-reload #'app))
 
+(defn wrapped-app []
+  ((-> (reloadable-app)
+       logger/wrap-with-logger
+       wrap-params
+       wrap-keyword-params
+       (wrap-json-response {:keywords? true})
+       (wrap-json-body {:keywords? true}))))
+
 (defn main [opts]
   (run-jetty (-> (reloadable-app)
                  logger/wrap-with-logger
                  wrap-params
                  wrap-keyword-params
+                 (wrap-cors #".*localhost.*")
                  (wrap-json-response {:keywords? true})
                  (wrap-json-body {:keywords? true}))
              {:port 7500 :join? false}))
