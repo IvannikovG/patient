@@ -16,6 +16,7 @@
 
         ;; ;;
         clj-time/clj-time {:mvn/version "0.15.2"}
+        ring/ring-mock {:mvn/version "0.4.0"}
         }
  :aliases {:test {:extra-paths ["test"]
                   :extra-deps {com.cognitect/test-runner {:git/url "https://github.com/cognitect-labs/test-runner.git"
