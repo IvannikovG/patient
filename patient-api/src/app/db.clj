@@ -59,9 +59,7 @@
   (j/query db-spec "SELECT * FROM patient"))
 
 (defn get-pat-by-id [id table-name]
-  (first (j/query db-spec
-                  [(format "SELECT * FROM %s WHERE id=%s"
-                           table-name id)])))
+  (j/get-by-id db-spec "patient" (Integer/parseInt id)))
 
 (defn get-patient-by-id [id]
   (get-pat-by-id id "patient"))

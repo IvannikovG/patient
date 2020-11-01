@@ -27,6 +27,7 @@
 (defn wrapped-app []
   ((-> (reloadable-app)
        logger/wrap-with-logger
+       logger/wrap-log-request-params
        wrap-params
        wrap-keyword-params
        (wrap-json-response {:keywords? true})
@@ -37,7 +38,7 @@
                  logger/wrap-with-logger
                  wrap-params
                  wrap-keyword-params
-                 (wrap-cors #".*localhost.*")
                  (wrap-json-response {:keywords? true})
-                 (wrap-json-body {:keywords? true}))
+                 (wrap-json-body {:keywords? true})
+                 (wrap-cors #".*"))
              {:port 7500 :join? false}))

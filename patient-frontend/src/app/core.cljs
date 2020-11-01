@@ -87,8 +87,8 @@
 
 
 (defn make-response-and-update-state [url]
-  (go (let [response (<! (http/get "http://localhost:7500/patients/5"
-                                 {:with-credentials? false}))]
+  (go (let [response (<! (http/get url
+                                   {:with-credentials? false}))]
       (prn (:status response))
       (prn (:body response))
       (reset! state (:body response))
@@ -111,6 +111,47 @@
              :value "GET"} "Get"]])
 
 
+;;REFRAME ARTICLE
+
+(defn basic-container [view-component]
+  [:div [:p "Basic component"]
+   view-component
+   "End of basic component"])
+
+
+(defn centered-column-container [view-component]
+  [:div.ui.grid
+   {:style {:background "purple"}}
+   [:p "contact-form"]
+   [:div.two.column.centered.row
+    [:div.column
+     {:style {:background "cyan"}}
+     view-component]]])
+
+(defn message2 [icon-class message-class header description]
+  [:div.ui.icon.message
+   {:class message-class}
+   [:i.icon
+    {:class icon-class}]
+   [:div.content
+    [:div.heder header]
+    [:div description]]])
+
+(def error-message (partial message2 "" "warning"))
+(def success-message (partial message2 "" "succ"))
+
+(defn example-embedded-component
+  [message header embedded-component]
+  (message header embedded-component))
+
+(defn contact-component []
+  [:div
+   [:div "Something went wrong"]
+   [:a {:href "http://localhost:9500"}
+    "contact admin"]])
+
+;; REFRAME Article
+
 (dom/render
  [:div
   [:p "sample text"]
@@ -120,9 +161,13 @@
   [optional-component 1 2]
   [message "Emergency" true]
   [checkbox "Helen" true]
-  [contact-form "Mister" "propeller" "ASD@web.de" "His vortex"]
   [get-button]
-  [patient-component]
+  [centered-column-container [contact-form "Mister" "propeller" "ASD@web.de" "His vortex"]]
+  [error-message "header" "Description"]
+  [success-message "Header succ" "Descrp"]
+  [example-embedded-component error-message
+   "Some header" contact-component]
+  [contact-component]
   ]
  (.. js/document (getElementById "app")))
 

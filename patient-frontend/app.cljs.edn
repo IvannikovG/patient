@@ -1,2 +1,2 @@
 ^{:css-dirs ["resources/public"]}
-{:main app.core}
+{:main app.reframe}
