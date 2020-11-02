@@ -18,7 +18,7 @@
 (defn get-birthdate! []
   (let [js-date @birthdate]
     (if (date? js-date)
-      (.toLocaleDateString js-date "ru" "%d-%b-%Y")
+      (.toLocaleDateString js-date "en" "%d-%b-%Y")
       "unselected")))
 
 (defn dispatch-birthdate []

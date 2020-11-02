@@ -1,5 +1,6 @@
 (ns app.handlers
   (:require [ring.util.response :refer :all]
+            [clojure.walk :as walk]
             [app.db :as db]))
 
 
@@ -18,13 +19,13 @@
 
 
 (defn save-patient-page [request]
-  (let [form-data (:body request)]
+  (let [form-data (walk/keywordize-keys (:params request))]
     ;; validate data before save to db
     (db/create-patient form-data)
        {:status 200
         :headers {}
-        :body (str "Successfully saved"
-                   (:fullname form-data))}))
+        :body (str "Successfully saved: "
+              (:fullname form-data))}))
 
 
 

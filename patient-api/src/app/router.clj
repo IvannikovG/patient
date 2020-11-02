@@ -12,7 +12,7 @@
 
 
 (defroutes app
-  (GET "/" [] "hello i am he!")
+  (GET "/" [] "CRUD PATIENT")
   (GET "/patients" request (patients-page request))
   (POST "/patients" request (save-patient-page request))
   (GET "/patients/find" request (search-patients-page request))
@@ -25,20 +25,15 @@
   (wrap-reload #'app))
 
 (defn wrapped-app []
-  ((-> (reloadable-app)
+  (-> (reloadable-app)
        logger/wrap-with-logger
        logger/wrap-log-request-params
        wrap-params
        wrap-keyword-params
        (wrap-json-response {:keywords? true})
-       (wrap-json-body {:keywords? true}))))
+       (wrap-json-body {:keywords? true})))
 
 (defn main [opts]
-  (run-jetty (-> (reloadable-app)
-                 logger/wrap-with-logger
-                 wrap-params
-                 wrap-keyword-params
-                 (wrap-json-response {:keywords? true})
-                 (wrap-json-body {:keywords? true})
+  (run-jetty (-> (wrapped-app)
                  (wrap-cors #".*"))
              {:port 7500 :join? false}))
