@@ -17,6 +17,6 @@ jobs:
      # - run: clojure
 
       # run tests!
-      - run: clojure -M:test
+      - run: clojure -M:test -n test-helpers
 
 
