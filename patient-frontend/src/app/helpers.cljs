@@ -28,9 +28,10 @@
                           (assoc m k (str/lower-case v))
                           (assoc m k v))) {} record))
 
-
+;;; UNUSED and untested. Candidates to be removed
 (defn map-subset? [a-map b-map]
   (every? (fn [[k _ :as entry]] (= entry (find b-map k))) a-map))
+
 
 (defn filter-by [config collection]
   (let [conf (remove-nils-and-empty-strings config)]
