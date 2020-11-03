@@ -19,6 +19,6 @@ jobs:
       # run tests!
       - run: ls
       - run: cd patient-api
-      - run: clojure -M:test -n test-helpers
+      - run: clojure -M:test
 
 
