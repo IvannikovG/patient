@@ -3,6 +3,7 @@
              [app.helpers :as h]))
 
 
+(t/deftest helper-tests
 (t/testing "Helpers"
   (t/testing "Stringify map keywords"
     (t/is (= (h/stringify-map-keywords {:a "abc" :b 1})
@@ -19,6 +20,4 @@
   (t/testing "Return lower cased values in a map"
     (t/is (= {:a "anna" :b "maria"}
              (h/lower-cased-values {:a "AnNa" :b "MaRIa"}))))
-  )
-
-
+  ))
