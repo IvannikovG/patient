@@ -7,7 +7,9 @@
             [app.events :as events]
             [app.subscriptions :as subscriptions]
             [goog.string :as gstring]
-            [app.helpers :as h]))
+            [app.helpers :as h]
+            [app.current-query-parameters :as cqp]
+            [app.handlers-for-views :as handlers]))
 
 (enable-console-print!)
 
@@ -60,21 +62,14 @@
 
 
 
-(defn load-filtered-patients [query-params]
-  (do (rf/dispatch [:filter-patients query-params])
-      (rf/dispatch [:last-event (str "Returned patients with matching parameters: "
-                                     (h/remove-nils-and-empty-strings
-                                      @(rf/subscribe [:query-parameters])))])))
-
-
 (defn load-filtered-button []
-  [:button {:on-click #(load-filtered-patients (events/current-query-parameters))}
+  [:button {:on-click #(handlers/load-filtered-patients (cqp/current-query-parameters))}
    "Load users by parameters from the form"])
 
 
 (defn create-patient-button []
-   (let [empty-values (h/find-empty-keywords (events/current-query-parameters))]
-      [:button {:on-click #(h/save-patient (events/current-query-parameters))}
+   (let [empty-values (h/find-empty-keywords (cqp/current-query-parameters))]
+      [:button {:on-click #(handlers/save-patient (cqp/current-query-parameters))}
        "Create user from parameters you provided"]))
 
 

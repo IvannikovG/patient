@@ -3,23 +3,17 @@
             [clojure.edn :as edn]
             [app.helpers :as h]
             [cljs-http.core :as http]
-            [clojure.string :as str]))
+            [clojure.string :as str]
+            [app.current-query-parameters :as cqp]
+            [app.handlers-for-views :as handlers]))
 
-
-(defn current-query-parameters []
-  {:fullname @(rf/subscribe [:fullname])
-   :gender @(rf/subscribe [:gender])
-   :birthdate @(rf/subscribe [:birthdate])
-   :address @(rf/subscribe [:address])
-   :insurance @(rf/subscribe [:insurance])
-   })
 
 ;; -- Domino 2 - Event Handlers -----------------------------------------------
 
 (rf/reg-event-db
  :initialize
  (fn [_ _]
-   (h/load-all-patients)
+   (handlers/load-all-patients)
    {:patients (edn/read-string
                (.getItem js/localStorage "patients"))
     :query-parameters {:fullname nil
@@ -78,8 +72,16 @@
  (fn [db [_ query-params]]
    (-> db
        (assoc :filtered-patients
-              (h/filter-by (current-query-parameters)
+              (h/filter-by (cqp/current-query-parameters)
                            (:patients db))))))
+
+(rf/reg-event-db
+ :filter-patients-from-backend
+ (fn [db [_ patients]]
+   (-> db
+       (assoc :filtered-patients patients))))
+
+
 
 (rf/reg-event-db
  :last-event

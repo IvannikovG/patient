@@ -121,4 +121,6 @@
   (j/find-by-keys db-spec table-name search-config))
 
 (defn filter-patients-by [search-config]
-  (filter-by search-config :patient))
+  (if (empty? search-config)
+    (get-all-patients)
+    (filter-by search-config :patient)))
