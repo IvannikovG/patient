@@ -1,14 +1,27 @@
+# Clojure CircleCI 2.0 configuration file
 #
-# https://circleci.com/docs/2.0/language-clojure/ for more details
+# Check https://circleci.com/docs/2.0/language-clojure/ for more details
 #
-version: 1
+version: 2
 jobs:
   build:
+    docker:
+      # specify the version you desire here
+      - image: circleci/clojure:lein-2.7.1
 
     working_directory: ~/patient-frontend
 
+    environment:
+      LEIN_ROOT: "true"
+      # Customize the JVM maximum heap limit
+      JVM_OPTS: -Xmx3200m
+
     steps:
+      - checkout
+
+      - run: clj
 
       # run tests!
-      - run: clj -M:test -d test -n test-helpers 
+      - run: clj -M:test -d test -n test-helpers
+
 
