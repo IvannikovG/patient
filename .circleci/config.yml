@@ -14,9 +14,9 @@ jobs:
     steps:
       - checkout
 
-      - run: clj
+      - run: clojure
 
       # run tests!
-      - run: clj -M:test -d test -n test-helpers
+      - run: clojure -M:test -d test -n test-helpers
 
 
