@@ -9,7 +9,6 @@ jobs:
       # specify the version you desire here
       - image: circleci/clojure:latest
 
-    working_directory: ~/patient-frontend
 
     steps:
       - checkout
@@ -18,7 +17,7 @@ jobs:
 
       # run tests!
       - run: ls
-      - run: cd patient-api
+      - run: cd patient-frontend
       - run: clojure -M:test
 
 

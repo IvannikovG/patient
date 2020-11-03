@@ -26,7 +26,7 @@
 (rf/reg-event-db
  :save-patient
  (fn [db [_ query-params]]
-   ;(println query-params)
+   (println query-params)
    (-> db
        (assoc :errors
               (str/join " "

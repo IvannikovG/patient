@@ -76,6 +76,7 @@
 
 (defn patient-component [patient]
   [:div.patient
+   [:div "Id: " (:id patient)]
    [:div "Full name: " (:fullname patient)]
    [:div "Gender: " (:gender patient)]
    [:div "Birthdate: " (:birthdate patient)]

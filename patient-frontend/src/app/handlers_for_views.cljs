@@ -53,7 +53,7 @@
   (rf/dispatch [:save-patient query-params])
   (let [str-query-params (h/stringify-map-keywords query-params)]
     (if (empty? @(rf/subscribe [:form-errors]))
-      (do 
+      (do
           (upload-patient "http://localhost:7500/patients" str-query-params)
           (rf/dispatch [:last-event (str "Saved patient" str-query-params)]))
       (rf/dispatch [:last-event (str
