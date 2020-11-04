@@ -28,6 +28,13 @@
                           (assoc m k (str/lower-case v))
                           (assoc m k v))) {} record))
 
+
+(defn find-empty-keywords [record]
+  (map first (filter (fn [el] (empty-value?
+                               (second el))) record)))
+
+
+
 ;;; UNUSED and untested. Candidates to be removed
 (defn map-subset? [a-map b-map]
   (every? (fn [[k _ :as entry]] (= entry (find b-map k))) a-map))
@@ -40,8 +47,5 @@
 
 
 
-(defn find-empty-keywords [record]
-  (map first (filter (fn [el] (empty-value?
-                    (second el))) record)))
 
 

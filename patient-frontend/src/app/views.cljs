@@ -2,19 +2,18 @@
   (:require [reagent.dom :as dom]
             [reagent.core :as r]
             [re-frame.core :as rf]
-            [cljs-http.client :as http]
+            [goog.string :as gstring]
+
             [app.datepicker :as dp]
             [app.events :as events]
             [app.subscriptions :as subscriptions]
-            [goog.string :as gstring]
             [app.helpers :as h]
             [app.current-query-parameters :as cqp]
-            [app.handlers-for-views :as handlers]))
+            ))
 
 (enable-console-print!)
 
 
-;; ;; -- Domino 5 - View Functions ----------------------------------------------
 
  (defn fullname-input []
    (let [gettext (fn [e] (-> e .-target .-value))
@@ -60,19 +59,24 @@
                               :on-click #(rf/dispatch
                                           [:select-gender "other"])} "other"]])
 
+(defn load-all-patients-button []
+  [:button {:on-click #(rf/dispatch
+                        [:load-all-patients])}
+   "Load patients"])
 
 
 (defn load-filtered-button []
-  [:button {:on-click #(handlers/load-filtered-patients (cqp/current-query-parameters))}
-   "Load users by parameters from the form"])
+  [:button {:on-click #(rf/dispatch
+                        [:load-patients-with-query
+                         (cqp/current-query-parameters)])}
+   "Load patients by parameters from the form"])
 
 
-(defn create-patient-button []
-   (let [empty-values (h/find-empty-keywords (cqp/current-query-parameters))]
-      [:button {:on-click #(handlers/save-patient (cqp/current-query-parameters))}
-       "Create user from parameters you provided"]))
-
-
+(defn save-patient-button []
+  (let [empty-values (h/find-empty-keywords (cqp/current-query-parameters))
+        query-parameters (cqp/current-query-parameters)]
+    [:button {:on-click #(rf/dispatch [:create-patient query-parameters empty-values])}
+     "SAAVE PATIETN"]))
 
 (defn patient-component [patient]
   [:div.patient
@@ -81,7 +85,8 @@
    [:div "Gender: " (:gender patient)]
    [:div "Birthdate: " (:birthdate patient)]
    [:div "Address: " (:address patient)]
-   [:div "Insurance-number: " (:insurance patient)]])
+   [:div "Insurance-number: " (:insurance patient)]
+   [:button {:on-click #(rf/dispatch [:delete-patient-with-id (:id patient)])} "Delete"]])
 
 (defn patient-list [patients component-show-name]
   [:div (if (nil? patients) nil component-show-name)
@@ -106,7 +111,6 @@
 
 (defn form-with-user-input []
   [:div
-   [errors-list]
    [:div "Fullname: " @(rf/subscribe [:fullname])]
    [:div "Insurance: " (str @(rf/subscribe [:insurance]))]
    [:div "Birthdate: " (str @(rf/subscribe [:birthdate]))] 
@@ -115,22 +119,20 @@
    ])
 
 
-(defn test-component []
-  [:div
-   [:h3 "Asd"]])
-
 (defn ui
   []
   [:div
    [:h1 "Patients CRUD"]
+   [errors-list]
    [:div "Last event: "@(rf/subscribe [:last-event])]
    [query-form]
-   [load-filtered-button]
    [form-with-user-input]
-   [create-patient-button]
-   [patient-list @(rf/subscribe [:filtered-patients]) "Found patients"]
-  ])
-
+   [save-patient-button]
+   [:div "Debugging loading patients"]
+   [load-all-patients-button]
+   [load-filtered-button]
+   [patient-list @(rf/subscribe [:patients-list]) "Queried Patients"]
+])
 
 
 ;; -- Entry Point -------------------------------------------------------------

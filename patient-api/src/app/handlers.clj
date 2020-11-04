@@ -19,13 +19,19 @@
 
 
 (defn save-patient-page [request]
-  (let [form-data (walk/keywordize-keys (:params request))]
-    ;; validate data before save to db
-    (db/create-patient form-data)
+  (let [form-data (:body request)
+        query-string-data (:params request)]
+    (cond
+      (empty? query-string-data) (db/create-patient form-data)
+      (not (= (type form-data)
+              clojure.lang.PersistentArrayMap))
+           (db/create-patient (walk/keywordize-keys query-string-data))
+      :else (println "Some unexpected bug happened"))
        {:status 200
-        :headers {}
-        :body (str "Successfully saved: "
-              (:fullname form-data))}))
+        :headers {"content-type" "application/json"}
+        :body {:patient (str "Saved patient with name: "
+                             (:fullname form-data)
+                             (:fullname (walk/keywordize-keys query-string-data)))}}))
 
 
 
@@ -53,6 +59,7 @@
 
 
 (defn search-patients-page [request]
+  (println request)
  (let [search-params (:params request)
        patients (vec (db/filter-patients-by search-params))]
    {:status 200

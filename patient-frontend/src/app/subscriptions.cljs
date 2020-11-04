@@ -4,9 +4,9 @@
 ;; -- Domino 4 - Query  -------------------------------------------------------
 
 (rf/reg-sub
- :patients
+ :patients-list
  (fn [db _]
-   (:patients db)))
+   (:patients-list db)))
 
 (rf/reg-sub
  :query-parameters
