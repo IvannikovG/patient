@@ -1,7 +1,6 @@
 (ns app.subscriptions
   (:require [re-frame.core :as rf]))
 
-;; -- Domino 4 - Query  -------------------------------------------------------
 
 (rf/reg-sub
  :patients-list
@@ -12,6 +11,11 @@
  :query-parameters
  (fn [db _]
    (:query-parameters db)))
+
+(rf/reg-sub
+ :patient-id
+ (fn [db _]
+   (get-in db [:query-parameters :patient-id])))
 
 (rf/reg-sub
  :fullname

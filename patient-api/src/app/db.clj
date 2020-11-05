@@ -1,7 +1,9 @@
 (ns app.db
   (:require [clojure.java.jdbc :as j]
             [clj-time.core :as time]
-            [clj-time.format :as f]))
+            [clj-time.format :as f]
+            [app.utils :as utils]
+            ))
 
 
 ;; CONSTANTS ;;
@@ -59,7 +61,7 @@
   (j/query db-spec "SELECT * FROM patient"))
 
 (defn get-pat-by-id [id table-name]
-  (j/get-by-id db-spec "patient" (Integer/parseInt id)))
+  (j/get-by-id db-spec "patient" id))
 
 (defn get-patient-by-id [id]
   (get-pat-by-id id "patient"))
@@ -124,3 +126,7 @@
   (if (empty? search-config)
     (get-all-patients)
     (filter-by search-config :patient)))
+
+
+(defn create-n-patients-in [n table-name]
+  (j/insert-multi! db-spec table-name (utils/generate-n-patients n)))

@@ -14,6 +14,15 @@
 (enable-console-print!)
 
 
+(defn id-input []
+  (let [gettext (fn [e] (-> e .-target .-value))
+        emit    (fn [e] (rf/dispatch [:add-id-query-parameter
+                                      (gettext e)]))]
+    [:div "Id: "
+     [:input {:type "text"
+              :placeholder "Enter patient id"
+              :value @(rf/subscribe [:patient-id])
+              :on-change emit}]]))
 
  (defn fullname-input []
    (let [gettext (fn [e] (-> e .-target .-value))
@@ -73,10 +82,22 @@
 
 
 (defn save-patient-button []
-  (let [empty-values (h/find-empty-keywords (cqp/current-query-parameters))
+  (let [empty-values (h/find-empty-keywords
+                      (cqp/current-query-parameters))
         query-parameters (cqp/current-query-parameters)]
-    [:button {:on-click #(rf/dispatch [:create-patient query-parameters empty-values])}
-     "SAAVE PATIETN"]))
+    [:button {:on-click #(rf/dispatch [:create-patient
+                                       query-parameters
+                                       empty-values])}
+     "Save patient"]))
+
+(defn update-patient-button []
+  (let [query-parameters (cqp/current-query-parameters)
+        patient-id @(rf/subscribe [:patient-id])]
+    [:button {:on-click #(rf/dispatch [:update-patient
+                                       patient-id
+                                       (h/remove-nils-and-empty-strings
+                                        query-parameters)])}
+     "Update patient with current query parameters"]))
 
 (defn patient-component [patient]
   [:div.patient
@@ -86,7 +107,8 @@
    [:div "Birthdate: " (:birthdate patient)]
    [:div "Address: " (:address patient)]
    [:div "Insurance-number: " (:insurance patient)]
-   [:button {:on-click #(rf/dispatch [:delete-patient-with-id (:id patient)])} "Delete"]])
+   [:button {:on-click #(rf/dispatch [:delete-patient-with-id
+                                      (:id patient)])} "Delete"]])
 
 (defn patient-list [patients component-show-name]
   [:div (if (nil? patients) nil component-show-name)
@@ -102,6 +124,7 @@
 
 (defn query-form []
   [:div
+   [id-input]
    [fullname-input]
    [select-gender-component]
    [insurance-input]
@@ -111,6 +134,7 @@
 
 (defn form-with-user-input []
   [:div
+   [:div "Id: " @(rf/subscribe [:patient-id])]
    [:div "Fullname: " @(rf/subscribe [:fullname])]
    [:div "Insurance: " (str @(rf/subscribe [:insurance]))]
    [:div "Birthdate: " (str @(rf/subscribe [:birthdate]))] 
@@ -127,6 +151,7 @@
    [:div "Last event: "@(rf/subscribe [:last-event])]
    [query-form]
    [form-with-user-input]
+   [update-patient-button]
    [save-patient-button]
    [:div "Debugging loading patients"]
    [load-all-patients-button]
@@ -144,7 +169,7 @@
 
 (defn run
   []
- (rf/dispatch-sync [:initialize]) ;; put a value into application state
+ (rf/dispatch-sync [:initialize]) 
   (render)
 )
 

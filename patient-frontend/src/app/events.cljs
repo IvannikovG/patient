@@ -12,7 +12,6 @@
 ;; INIT ;;
 
 
-
 (rf/reg-event-db
  :initialize
  (fn [_ _]
@@ -22,12 +21,18 @@
 
 ;; STABLE PURE EVENTS ;;
 
-;; Another one
 (rf/reg-event-db
  :last-event
  (fn [db [_ event-name]]
    (-> db
        (assoc :last-event event-name))))
+
+
+(rf/reg-event-db
+ :add-id-query-parameter
+ (fn [db [_ id]]
+   (-> db
+       (assoc-in [:query-parameters :patient-id] id))))
 
 
 (rf/reg-event-db
@@ -103,27 +108,19 @@
  :load-patients-with-query
  (fn [{:keys [db]} [_ query-parameters]]
    (println db)
-   {:db (assoc db :last-event (str "Loaded patients with following query parameters: "
-                                   query-parameters ))
+   {:db (assoc db :last-event (str
+                               "Loaded patients with following query parameters: "
+                               (h/remove-nils-and-empty-strings query-parameters)))
     :http-xhrio {:method :get
                  :uri "http://localhost:7500/patients/find"
-                 :response-format (ajax/json-response-format {:keywords? true})
-                 :body (h/remove-nils-and-empty-strings query-parameters)
+                 :response-format (ajax/json-response-format
+                                   {:keywords? true})
+                 :params (h/remove-nils-and-empty-strings
+                          query-parameters)
                  :on-success [:save-filtered-patients-into-state]
                  :on-failure [:put-errors-into-state]}}))
 
 ;;; PATIENT SAVERS AND DELETERS ;;;
-
-;; Legacy
-(rf/reg-event-db
- :save-patient-legacy
- (fn [db [_ query-params]]
-   (println query-params)
-   (-> db
-       (assoc :errors
-              (str/join " "
-                        (h/find-empty-keywords query-params))))))
-
 
 
 ;; Deleters
@@ -138,11 +135,13 @@
 (rf/reg-event-fx
  :delete-patient-with-id
  (fn [{:keys [db]} [_ patient-id]]
-   {:db (assoc db :last-event (str "Deleting patient with id: " patient-id)
+   {:db (assoc db :last-event (str "Deleting patient with id: "
+                                   patient-id)
           :patients-list (remove (fn [p] (= (:id p) patient-id))
                                  (:patients-list db)))
     :http-xhrio {:method :delete
-                 :uri (str "http://localhost:7500/patients/" patient-id "/delete")
+                 :uri (str "http://localhost:7500/patients/"
+                           patient-id "/delete")
                  :format (ajax/json-request-format)
                  :response-format (ajax/json-response-format {:keywords? true})
                  :on-success [:delete-patient-from-state patient-id]
@@ -156,12 +155,14 @@
    ; (println "QP" query-parameters "EQP" empty-query-parameters)
    (if (empty? empty-query-parameters)
      (do (println "Parameters OK" query-parameters)
-         {:db (assoc db :last-event (str "Creating patient"))
+         {:db (assoc db :last-event (str "Creating patient: "
+                                         (:fullname query-parameters)))
           :http-xhrio {:method :post
                        :uri "http://localhost:7500/patients"
                        :format (ajax/json-request-format)
                        :params query-parameters
-                       :response-format (ajax/json-response-format {:keywords? true})
+                       :response-format (ajax/json-response-format
+                                         {:keywords? true})
                        :on-success [:save-patient query-parameters]
                        :on-failure [:put-errors-into-state]}})
      {:db (assoc db :last-event (str "Failed to save patient due to empty fields: "
@@ -176,4 +177,30 @@
 
 ;; UPDATERS
 
-;; TODO ;;
+(rf/reg-event-db
+ :update-patient-into-state
+ (fn [db [_ patient-id query-parameters]]
+   (println patient-id query-parameters)
+   (assoc db :last-event
+          "Reload the page to see changes to your patient")
+ ))
+
+(rf/reg-event-fx
+ :update-patient
+ (fn [{:keys [db]} [_ patient-id query-parameters]]
+ (println "QP" query-parameters "PID" patient-id)
+     (do (println "Parameters OK" query-parameters)
+         {:db (assoc db :last-event (str "Updating patient"))
+          :http-xhrio {:method :post
+                       :uri (str "http://localhost:7500/patients/"
+                                 patient-id
+                                 "/update")
+                       :format (ajax/json-request-format)
+                       :params query-parameters
+                       :response-format (ajax/json-response-format
+                                         {:keywords? true})
+                       :on-success [:update-patient-into-state
+                                    patient-id
+                                    query-parameters]
+                       :on-failure [:put-errors-into-state]}})))
+

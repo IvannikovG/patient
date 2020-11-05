@@ -1,5 +1,5 @@
 (ns app.router
-  (:require [compojure.core :refer [GET POST DELETE defroutes routes]]
+  (:require [compojure.core :refer [GET POST DELETE defroutes routes context]]
             [ring.middleware.reload :refer [wrap-reload]]
             [ring.adapter.jetty :refer [run-jetty]]
             [ring.middleware.json :refer :all]
@@ -11,7 +11,7 @@
 
 
 
-(defroutes app
+(defroutes appa
   (GET "/" [] "CRUD PATIENT")
   (GET "/patients" request (patients-page request))
   (POST "/patients" request (save-patient-page request))
@@ -19,6 +19,20 @@
   (GET "/patients/:id" [id :as request] (get-patient-page request))
   (POST "/patients/:id/update" [id :as request] (update-patient-page request))
   (DELETE "/patients/:id/delete" [id :as request] (delete-patient-page request))
+  page-404)
+
+(defroutes app
+  (GET "/" [] "CRUD PATIENT")
+  (context "/patients" request
+           (GET "/" request (patients-page request))
+           (POST "/" request (save-patient-page request))
+           (GET "/find" request (search-patients-page request))
+           (GET "/:id" [id :as request] (get-patient-page request))
+           (POST "/:id/update"
+                 [id :as request] (update-patient-page request))
+           (DELETE "/:id/delete" [id :as request]
+                   (delete-patient-page request))
+           )
   page-404)
 
 (defn reloadable-app []

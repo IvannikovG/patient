@@ -1,7 +1,9 @@
 (ns app.utils
-  (:require [app.db :as db]
-            [clojure.java.jdbc :as j]))
+  (:require [clojure.java.jdbc :as j]))
 
+(defn strToInt [x]
+  (Integer/parseInt
+   (apply str (filter #(Character/isDigit %) x))))
 
 (def random (java.util.Random.))
 
@@ -49,5 +51,4 @@
 (defn generate-n-patients [n]
   (take n (repeatedly generate-random-patient-edn)))
 
-(defn create-n-patients-in [n table-name]
-  (j/insert-multi! db/db-spec table-name (generate-n-patients n)))
+
