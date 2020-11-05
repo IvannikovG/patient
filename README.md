@@ -10,7 +10,7 @@
 ###### [*id* | *fullname* | *gender* | *birthdate* | *address* | *insurance*]
 
 ##### Workflow:
-###### 08.10 - 15.10: Check out to use clojure
+###### 08.10 - 15.10: Check out clojure
 ###### 15.10 - 22.10: Learn clojure instruments and tools setup
 ###### 22.10 - 28.10: Setup backend
 ###### 28.10 - ongoing: Setup frontend
