@@ -1,5 +1,5 @@
 ## Test task Health Samurai. Georgii Ivannikov
-![alt text](https://ibb.co/Px6jXmC)
+![Image](https://ibb.co/Px6jXmC)
 ### Projects consists of api, that hosts jsons, and front-end made with reagent / re-frame
 
 ##### To make the website work one should use 2 commands:
