@@ -8,13 +8,17 @@
 
 ;; CONSTANTS ;;
 
+(def database-type (System/getenv "DATABASE_TYPE"))
+(def database-name (System/getenv "DATABASE_NAME"))
+(def database-user (System/getenv "DATABASE_USER"))
+(def database-password (System/getenv "DATABASE_PASSWORD"))
+
 (def custom-formatter (f/formatter "YYYYMMDD"))
 
-
-(def db-spec {:dbtype "postgresql"
-              :dbname "clj1database"
-              :user "georgii"
-              :password ""})
+(def db-spec {:dbtype database-type
+              :dbname database-name
+              :user database-user
+              :password database-password})
 
 (def patient-table-description
    [[:id "SERIAL"]

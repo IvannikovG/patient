@@ -3,3 +3,4 @@
 target/
 .git
 patient-api/.nrepl-port
+.DS_Store

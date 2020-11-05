@@ -58,7 +58,7 @@
     (db/update-patient patient-id form-data)
     {:status 200
      :headers {}
-     :body (db/get-patient-by-id patient-id)
+     :body {:patient (db/get-patient-by-id patient-id)}
      }))
 
 (defn delete-patient-page [request]

@@ -6,6 +6,7 @@
             [ajax.core :as ajax]
             [clojure.string :as str]
             [app.current-query-parameters :as cqp]
+            [app.config :as cfg :refer [host port]]
             ))
 
 
@@ -89,7 +90,7 @@
  (fn [{:keys [db]} _]
    (println "DB" db )
    {:http-xhrio {:method :get
-                :uri "http://localhost:7500/patients"
+                :uri (str host ":" port "/patients")
                 :response-format (ajax/json-response-format {:keywords? true})
                 :on-success [:save-patients-into-state]
                 :on-failure [:put-errors-into-state]}}))
@@ -112,7 +113,7 @@
                                "Loaded patients with following query parameters: "
                                (h/remove-nils-and-empty-strings query-parameters)))
     :http-xhrio {:method :get
-                 :uri "http://localhost:7500/patients/find"
+                 :uri (str host ":" port "/patients/find")
                  :response-format (ajax/json-response-format
                                    {:keywords? true})
                  :params (h/remove-nils-and-empty-strings
@@ -140,7 +141,7 @@
           :patients-list (remove (fn [p] (= (:id p) patient-id))
                                  (:patients-list db)))
     :http-xhrio {:method :delete
-                 :uri (str "http://localhost:7500/patients/"
+                 :uri (str host ":" port "patients/"
                            patient-id "/delete")
                  :format (ajax/json-request-format)
                  :response-format (ajax/json-response-format {:keywords? true})
@@ -158,7 +159,7 @@
          {:db (assoc db :last-event (str "Creating patient: "
                                          (:fullname query-parameters)))
           :http-xhrio {:method :post
-                       :uri "http://localhost:7500/patients"
+                       :uri (str host ":" port "/patients")
                        :format (ajax/json-request-format)
                        :params query-parameters
                        :response-format (ajax/json-response-format
@@ -192,7 +193,7 @@
      (do (println "Parameters OK" query-parameters)
          {:db (assoc db :last-event (str "Updating patient"))
           :http-xhrio {:method :post
-                       :uri (str "http://localhost:7500/patients/"
+                       :uri (str host ":" port "/patients/"
                                  patient-id
                                  "/update")
                        :format (ajax/json-request-format)

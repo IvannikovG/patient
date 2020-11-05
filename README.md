@@ -1,5 +1,5 @@
 ## Test task Health Samurai. Georgii Ivannikov
-![alt text](https://github.com/[username]/IvannikovG/patient/master/HS-CANDIDATE-GOSHA.jpg?raw=true)
+![Image](https://i.ibb.co/CBH8C10/HS-CANDIDATE-GOSHA.png)
 ### Projects consists of api, that hosts jsons, and front-end made with reagent / re-frame
 
 ##### To make the website work one should use 2 commands:
@@ -10,13 +10,12 @@
 ###### [*id* | *fullname* | *gender* | *birthdate* | *address* | *insurance*]
 
 ##### Workflow:
-###### 08.10 - 15.10: Check out to use clojure
+###### 08.10 - 15.10: Check out clojure
 ###### 15.10 - 22.10: Learn clojure instruments and tools setup
 ###### 22.10 - 28.10: Setup backend
 ###### 28.10 - ongoing: Setup frontend
 
 ###### Current TODOs: 
-###### ⋅⋅⋅Put hardcoded stuff into .env
 ###### ⋅⋅⋅Routing on frontend
 ###### ⋅⋅⋅Add css (currently app looks not really well)
 ###### ⋅⋅⋅More tests...
