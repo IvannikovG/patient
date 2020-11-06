@@ -1,5 +1,5 @@
 (ns app.handlers
-  (:require [ring.util.response :refer :all]
+  (:require [ring.util.codec :refer [form-decode]]
             [clojure.walk :as walk]
             [app.utils :as utils]
             [app.db :as db]))
@@ -20,21 +20,14 @@
 
 
 (defn save-patient-page [request]
-  (let [form-data (:body request)
-        query-string-data (:params request)]
-    (println form-data query-string-data)
-    (cond
-      (empty? query-string-data) (db/create-patient form-data)
-      (not (= (type form-data)
-              clojure.lang.PersistentArrayMap))
-           (db/create-patient (walk/keywordize-keys query-string-data))
-      :else (println "Some unexpected bug happened"))
+  (let [form-data (:body request)]
+    (println "form-data" form-data)
+    (println request)
+     (db/create-patient form-data)
        {:status 200
         :headers {"content-type" "application/json"}
         :body {:patient (str "Saved patient with name: "
-                             (:fullname form-data)
-                             (:fullname (walk/keywordize-keys query-string-data)))}}))
-
+                             (:fullname form-data))}}))
 
 
 (defn get-patient-page [request]
@@ -46,6 +39,16 @@
      :headers {"content-type" "application/json"}
      :body patient}))
 
+(defn parse-query-string [query-string]
+  (walk/keywordize-keys (form-decode query-string)))
+
+(defn search-patients-page [request]
+  (let [query-string (parse-query-string (:query-string request))
+        patients (db/filter-patients-by query-string)]
+    {:status 200
+     :headers {"content-type" "application-json"}
+     :body patients
+     }))
 
 
 (defn update-patient-page [request]
@@ -68,13 +71,4 @@
      :body {:patient
             (format "Patient with id %s was deleted" patient-id)}}))
 
-
-(defn search-patients-page [request]
-  (println request)
- (let [search-params (:params request)
-       patients (vec (db/filter-patients-by search-params))]
-   (println search-params)
-   {:status 200
-    :headers {"content-type" "application/json"}
-    :body patients}))
 

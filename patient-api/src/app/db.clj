@@ -128,8 +128,8 @@
 
 (defn filter-patients-by [search-config]
   (if (empty? search-config)
-    (get-all-patients)
-    (filter-by search-config :patient)))
+    (vec (get-all-patients))
+    (vec (filter-by search-config :patient))))
 
 
 (defn create-n-patients-in [n table-name]

@@ -10,6 +10,7 @@
         ring/ring-jetty-adapter {:mvn/version "1.8.2"}
         ring/ring-devel {:mvn/version "1.8.2"}
         ring/ring-json {:mvn/version "0.5.0"}
+        cheshire/cheshire {:mvn/version "5.10.0"}
 
         jumblerg/ring-cors {:mvn/version "2.0.0"}
 
@@ -18,7 +19,10 @@
 
         ;; ;;
         clj-time/clj-time {:mvn/version "0.15.2"}
+
+        ;; TESTING DEPS ;;
         ring/ring-mock {:mvn/version "0.4.0"}
+
         }
  :aliases {:test {:extra-paths ["test"]
                   :extra-deps {com.cognitect/test-runner {:git/url "https://github.com/cognitect-labs/test-runner.git"

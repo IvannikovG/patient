@@ -7,7 +7,7 @@
             [clojure.string :as str]
             [app.current-query-parameters :as cqp]
             [app.config :as cfg :refer [host port]]
-            ))
+            [clojure.walk :as walk]))
 
 
 ;; INIT ;;
@@ -117,7 +117,7 @@
                  :response-format (ajax/json-response-format
                                    {:keywords? true})
                  :params (h/remove-nils-and-empty-strings
-                          query-parameters)
+                          (h/stringify-map-keywords query-parameters))
                  :on-success [:save-filtered-patients-into-state]
                  :on-failure [:put-errors-into-state]}}))
 

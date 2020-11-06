@@ -10,17 +10,6 @@
             [ring.logger :as logger]))
 
 
-
-(defroutes appa
-  (GET "/" [] "CRUD PATIENT")
-  (GET "/patients" request (patients-page request))
-  (POST "/patients" request (save-patient-page request))
-  (GET "/patients/find" request (search-patients-page request))
-  (GET "/patients/:id" [id :as request] (get-patient-page request))
-  (POST "/patients/:id/update" [id :as request] (update-patient-page request))
-  (DELETE "/patients/:id/delete" [id :as request] (delete-patient-page request))
-  page-404)
-
 (defroutes app
   (GET "/" [] "CRUD PATIENT")
   (context "/patients" request
