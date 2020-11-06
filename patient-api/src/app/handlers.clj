@@ -23,7 +23,7 @@
   (let [form-data (:body request)]
     (println "form-data" form-data)
     (println request)
-     (db/create-patient form-data)
+    (db/create-patient form-data)
        {:status 200
         :headers {"content-type" "application/json"}
         :body {:patient (str "Saved patient with name: "
@@ -53,7 +53,6 @@
 
 (defn update-patient-page [request]
   (let [form-data (:body request)
-        query-string-data (:params request)
         patient-id (utils/strToInt (:id (:params request)))]
     (println "Request" request)
     (println "Form data" form-data)
