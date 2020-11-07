@@ -1,176 +1,160 @@
 (ns app.views
   (:require [reagent.dom :as dom]
+            [secretary.core :as secretary :refer-macros [defroute ]]
             [reagent.core :as r]
+            [reagent.dom :as rdom]
             [re-frame.core :as rf]
             [goog.string :as gstring]
-
+            [goog.events :as e]
+            [goog.history.EventType :as EventType]
             [app.datepicker :as dp]
             [app.events :as events]
             [app.subscriptions :as subscriptions]
-            [app.helpers :as h]
-            [app.current-query-parameters :as cqp]
-            ))
+            [app.components :as components]
+            [reagent.session :as session]
+            )
+  (:import goog.history.Html5History)
+  )
+
 
 (enable-console-print!)
 
 
-(defn id-input []
-  (let [gettext (fn [e] (-> e .-target .-value))
-        emit    (fn [e] (rf/dispatch [:add-id-query-parameter
-                                      (gettext e)]))]
-    [:div "Id: "
-     [:input {:type "text"
-              :placeholder "Enter patient id"
-              :value @(rf/subscribe [:patient-id])
-              :on-change emit}]]))
-
- (defn fullname-input []
-   (let [gettext (fn [e] (-> e .-target .-value))
-         emit    (fn [e] (rf/dispatch [:add-fullname-query-parameter
-                                       (gettext e)]))]
-     [:div "Full name: "
-      [:input {:type "text"
-               :placeholder "Enter full name"
-               :value @(rf/subscribe [:fullname])
-               :on-change emit}]]))
+(defn hook-browser-navigation! []
+  (doto (Html5History.)
+    (e/listen
+     EventType/NAVIGATE
+     (fn [event]
+       (secretary/dispatch! (.-token event))
+       ))
+    (.setEnabled true)))
 
 
- (defn insurance-input []
-   (let [gettext (fn [e] (-> e .-target .-value))
-         emit    (fn [e] (rf/dispatch [:add-insurance-query-parameter
-                                       (gettext e)]))]
-     [:div "Insurance number: "
-      [:input {:type "text"
-               :placeholder "Enter insurance number"
-               :value @(rf/subscribe [:insurance])
-               :on-change emit}]]))
-
- (defn address-input []
-   (let [gettext (fn [e] (-> e .-target .-value))
-         emit    (fn [e] (rf/dispatch [:add-address-query-parameter
-                                       (gettext e)]))]
-     [:div "Address: "
-      [:input {:type "text"
-               :placeholder "Enter address number"
-               :value @(rf/subscribe [:address])
-               :on-change emit}]]))
+(def current-page-state (r/atom {}))
+;; (def app-state (r/atom {}))
 
 
- (defn select-gender-component []
-   [:div.btn-group {:field :single-select :id :unique-position}
-    [:button.btn.btn-default {:key :female
-                              :on-click #(rf/dispatch
-                                          [:select-gender "female"])} "female"]
-    [:button.btn.btn-default {:key :male
-                              :on-click #(rf/dispatch
-                                          [:select-gender "male"])} "male"]
-    [:button.btn.btn-default {:key :other
-                              :on-click #(rf/dispatch
-                                          [:select-gender "other"])} "other"]])
+;; (defn app-routes []
+;;   (secretary/set-config! :prefix "#")
 
-(defn load-all-patients-button []
-  [:button {:on-click #(rf/dispatch
-                        [:load-all-patients])}
-   "Load patients"])
+;;   (defroute "/" []
+;;     (swap! app-state assoc :page :home))
+
+;;   (defroute "/about" []
+;;     (swap! app-state assoc :page :about))
+
+;;   (hook-browser-navigation!))
 
 
-(defn load-filtered-button []
-  [:button {:on-click #(rf/dispatch
-                        [:load-patients-with-query
-                         (cqp/current-query-parameters)])}
-   "Load patients by parameters from the form"])
+(defn app-routes []
+  (secretary/set-config! :prefix "#")
+  (defroute "/" []
+    (swap! current-page-state assoc :page :home)
+    )
+  (defroute "/about" []
+    (swap! current-page-state assoc :page :about)
+    )
+  (defroute "/create" []
+    (swap! current-page-state assoc :page :create)
+    )
+  (defroute "/patients" []
+    (swap! current-page-state assoc :page :patients)
+    )
+  (defroute "/find" []
+    (swap! current-page-state assoc :page :find)
+    )
+  (defroute "/debug" []
+    (swap! current-page-state assoc :page :debug)
+  )
+  (hook-browser-navigation!))
 
 
-(defn save-patient-button []
-  (let [empty-values (h/find-empty-keywords
-                      (cqp/current-query-parameters))
-        query-parameters (cqp/current-query-parameters)]
-    [:button {:on-click #(rf/dispatch [:create-patient
-                                       query-parameters
-                                       empty-values])}
-     "Save patient"]))
+;; (defn home []
+;;   [:div [:h1 "Home Page"]
+;;    [:a {:href "#/about"} "about page"]])
 
-(defn update-patient-button []
-  (let [query-parameters (cqp/current-query-parameters)
-        patient-id @(rf/subscribe [:patient-id])]
-    [:button {:on-click #(rf/dispatch [:update-patient
-                                       patient-id
-                                       (h/remove-nils-and-empty-strings
-                                        query-parameters)])}
-     "Update patient with current query parameters"]))
+;; (defn about []
+;;   [:div [:h1 "About Page"]
+;;    [:a {:href "#/"} "home page"]])
 
-(defn patient-component [patient]
-  [:div.patient
-   [:div "Id: " (:id patient)]
-   [:div "Full name: " (:fullname patient)]
-   [:div "Gender: " (:gender patient)]
-   [:div "Birthdate: " (:birthdate patient)]
-   [:div "Address: " (:address patient)]
-   [:div "Insurance-number: " (:insurance patient)]
-   [:button {:on-click #(rf/dispatch [:delete-patient-with-id
-                                      (:id patient)])} "Delete"]])
 
-(defn patient-list [patients component-show-name]
-  [:div (if (nil? patients) nil component-show-name)
-   (gstring/unescapeEntities "&nbsp;")
+(defn home []
+  [:div
+   [components/navigation]])
+
+(defn about []
+  [:div [:h1 "About Patient CRUD"]
+   [:a {:href "#/"} "home page"]
    [:div
-    (for [patient patients]
-      ^{:key patient} [:div [patient-component patient]
-                       (gstring/unescapeEntities "&nbsp;")])]])
+    [:h3 "By Georgii Ivannikov"]
+    [:h3 "For Health Samurai"]]])
 
 
-(defn errors-list []
-  [:div {:style {:color "red"}} @(rf/subscribe [:form-errors])])
-
-(defn query-form []
+(defn create-patient-page []
   [:div
-   [id-input]
-   [fullname-input]
-   [select-gender-component]
-   [insurance-input]
-   [address-input]
-   [dp/datepicker-component]
-   ])
-
-(defn form-with-user-input []
-  [:div
-   [:div "Id: " @(rf/subscribe [:patient-id])]
-   [:div "Fullname: " @(rf/subscribe [:fullname])]
-   [:div "Insurance: " (str @(rf/subscribe [:insurance]))]
-   [:div "Birthdate: " (str @(rf/subscribe [:birthdate]))] 
-   [:div "Address: " (str @(rf/subscribe [:address]))]
-   [:div "Gender: " (str @(rf/subscribe [:gender]))]
-   ])
-
-
-(defn ui
-  []
-  [:div
-   [:h1 "Patients CRUD"]
-   [errors-list]
    [:div "Last event: "@(rf/subscribe [:last-event])]
-   [query-form]
-   [form-with-user-input]
-   [update-patient-button]
-   [save-patient-button]
-   [:div "Debugging loading patients"]
-   [load-all-patients-button]
-   [load-filtered-button]
-   [patient-list @(rf/subscribe [:patients-list]) "Queried Patients"]
-])
+   [components/navigation]
+   [:h1 "Create Patient via form"]
+   [components/query-form]
+   [components/save-patient-button]])
 
+(defn all-patients []
+  [:div
+   [:div "Last event: "@(rf/subscribe [:last-event])]
+   [components/navigation]
+   (rf/dispatch [:load-all-patients])
+   [components/patient-list
+    @(rf/subscribe [:patients-list]) "All found patients"]])
 
-;; -- Entry Point -------------------------------------------------------------
+(defn find-patient-page []
+  [:div
+   [:div "Last event: "@(rf/subscribe [:last-event])]
+   [components/navigation]
+   [:h1 "Find patients by query"]
+   [components/errors-list]
+   [components/query-form]
+   [components/load-filtered-patients-button]
+   [components/patient-list
+    @(rf/subscribe [:filtered-patients-list]) "Found this patients"]])
+
+(defmulti current-page #(@current-page-state :page))
+(defmethod current-page :home []
+  ;(println @(rf/subscribe [:log-database]))
+  [home])
+(defmethod current-page :about []
+  [about])
+(defmethod current-page :create []
+  [create-patient-page])
+(defmethod current-page :patients []
+  [all-patients])
+(defmethod current-page :find []
+  [find-patient-page])
+(defmethod current-page :debug []
+  [components/ui])
+(defmethod current-page :default []
+  [:div ])
+
+;; (defmulti current-page #(@app-state :page))
+;; (defmethod current-page :home []
+;;   [home])
+;; (defmethod current-page :about []
+;;   [about])
+;; (defmethod current-page :default []
+;;   [:div ])
+
+(def application
+  (js/document.getElementById "app"))
 
 (defn render
-  []
-  (reagent.dom/render [ui]
-                      (js/document.getElementById "app")))
+  [page]
+  (rdom/render [page] application))
 
-(defn run
+(defn ^:export main
   []
- (rf/dispatch-sync [:initialize]) 
-  (render)
-)
+  (app-routes)
+  (rf/dispatch-sync [:initialize])
+  (render
+   current-page)
+  )
 
-(run)
+(main)

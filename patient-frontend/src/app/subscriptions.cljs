@@ -3,9 +3,27 @@
 
 
 (rf/reg-sub
+ :log-database
+ (fn [db _]
+   (println db)
+   db))
+
+(rf/reg-sub
+ :page
+ (fn [db _]
+   (:page db)))
+
+
+(rf/reg-sub
  :patients-list
  (fn [db _]
    (:patients-list db)))
+
+(rf/reg-sub
+ :filtered-patients-list
+ (fn [db _]
+   (:filtered-patients-list db)))
+
 
 (rf/reg-sub
  :query-parameters

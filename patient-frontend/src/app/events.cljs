@@ -20,6 +20,15 @@
     :errors nil}))
 
 
+
+(rf/reg-event-db
+ :set-current-page
+ (fn [db [_ page]]
+   (println db)
+   (-> db
+       (assoc :page page))))
+
+
 ;; STABLE PURE EVENTS ;;
 
 (rf/reg-event-db
@@ -102,7 +111,7 @@
  (fn [db [_ patients]]
    (println db)
    (-> db
-       (assoc :patients-list patients :last-event "Filtered patients"))))
+       (assoc :filtered-patients-list patients :last-event "Filtered patients"))))
 
 
 (rf/reg-event-fx
@@ -139,9 +148,11 @@
    {:db (assoc db :last-event (str "Deleting patient with id: "
                                    patient-id)
           :patients-list (remove (fn [p] (= (:id p) patient-id))
-                                 (:patients-list db)))
+                                 (:patients-list db))
+          :filtered-patients-list (remove (fn [p] (= (:id p) patient-id))
+                                          (:filtered-patients-list db)))
     :http-xhrio {:method :delete
-                 :uri (str host ":" port "patients/"
+                 :uri (str host ":" port "/patients/"
                            patient-id "/delete")
                  :format (ajax/json-request-format)
                  :response-format (ajax/json-response-format {:keywords? true})
@@ -170,7 +181,7 @@
                                      empty-query-parameters))})))
 
 (rf/reg-event-db
- ;; DO not know what to do here
+;; DO nothing here
  :save-patient
  (fn [db [query-parameters]]
    (println query-parameters)))

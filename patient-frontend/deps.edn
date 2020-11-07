@@ -7,9 +7,12 @@
         com.bhauman/figwheel-main {:mvn/version "0.2.11"}
         ;; UI tools
         reagent/reagent {:mvn/version "1.0.0-alpha2"}
+        reagent-utils {:mvn/version "0.3.3"}
         re-frame/re-frame {:mvn/version "1.1.1"}
         json-html/json-html {:mvn/version "0.3.5"}
         cljs-pikaday/cljs-pikaday {:mvn/version "0.1.4"}
+        clj-commons/secretary {:mvn/version "1.2.4"}
+        hiccup {:mvn/version "2.0.0-alpha2"}
 
         ;; Sending requests
         day8.re-frame/http-fx {:mvn/version "0.2.1"}
