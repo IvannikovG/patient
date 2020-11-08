@@ -16,6 +16,5 @@
 ###### 28.10 - ongoing: Setup frontend
 
 ###### Current TODOs: 
-###### ⋅⋅⋅Routing on frontend
 ###### ⋅⋅⋅Add css (currently app looks not really well)
 ###### ⋅⋅⋅More tests...
