@@ -1,2 +1,3 @@
 ^{:css-dirs ["resources/public"]}
-{:main app.views}
+{:main app.router}
+

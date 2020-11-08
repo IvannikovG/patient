@@ -21,12 +21,18 @@
 
 
 
+;; (rf/reg-event-db
+;;  :set-current-page
+;;  (fn [db [_ page]]
+;;    (println db)
+;;    (-> db
+;;        (assoc :page page))))
+
 (rf/reg-event-db
- :set-current-page
- (fn [db [_ page]]
-   (println db)
+ :set-current-patient-id
+ (fn [db [_ id]]
    (-> db
-       (assoc :page page))))
+       (assoc :current-patient-id id))))
 
 
 ;; STABLE PURE EVENTS ;;
@@ -139,18 +145,17 @@
  (fn [db [_ patient-id]]
    (println patient-id)
    (assoc db :patients-list (remove (fn [p] (= (:id p) patient-id))
-                                     (:patients-list db)))))
+                                    (:patients-list db))
+          :filtered-patients-list (remove (fn [p] (= (:id p) patient-id))
+                                          (:filtered-patients-list db)))
+   ))
 
 
 (rf/reg-event-fx
  :delete-patient-with-id
  (fn [{:keys [db]} [_ patient-id]]
    {:db (assoc db :last-event (str "Deleting patient with id: "
-                                   patient-id)
-          :patients-list (remove (fn [p] (= (:id p) patient-id))
-                                 (:patients-list db))
-          :filtered-patients-list (remove (fn [p] (= (:id p) patient-id))
-                                          (:filtered-patients-list db)))
+                                   patient-id))
     :http-xhrio {:method :delete
                  :uri (str host ":" port "/patients/"
                            patient-id "/delete")

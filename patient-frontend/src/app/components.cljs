@@ -50,7 +50,7 @@
 
 
 (defn select-gender-component []
-  [:div 
+  [:div
    [:div.btn-group {:field :single-select :id :unique-position}
     [:button.btn.btn-default {:key :female
                               :on-click #(rf/dispatch
@@ -102,6 +102,7 @@
    [:div "Birthdate: " (:birthdate patient)]
    [:div "Address: " (:address patient)]
    [:div "Insurance-number: " (:insurance patient)]
+   [:a {:href (str "#/update/" (:id patient))} "Update"]
    [:button {:on-click #(rf/dispatch [:delete-patient-with-id
                                       (:id patient)])} "Delete"]])
 
@@ -142,6 +143,7 @@
    [:a {:href "#/create"} "Create patient "]
    [:a {:href "#/patients"} "All patients "]
    [:a {:href "#/find"} "Find "]
+   [:a {:href "#/update-patient"} "Update "]
    [:a {:href "#/debug"} "Debug"]
    ]
   )
@@ -150,6 +152,7 @@
 (defn ui
   []
   [:div
+   [navigation]
    [:h1 "Patients CRUD"]
    [errors-list]
    [:div "Last event: "@(rf/subscribe [:last-event])]
