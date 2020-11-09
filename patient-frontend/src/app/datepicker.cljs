@@ -34,12 +34,12 @@
          :pikaday-attrs {:max-date today}
          :input-attrs {:id "birthdate"}
          :on-click (dispatch-birthdate)}]]
-    [:div
-     [:p "You selected date: " (get-birthdate!)]
-     [:p [:button {:on-click #(do (set-date! today)
+   [:div {:style {:display "flex"
+                  :justify-content "center"}}
+     [:div [:button.button {:on-click #(do (set-date! today)
                                   (dispatch-birthdate))}
           "Set today"]]
-     [:p [:button {:on-click #(do (set-date! nil)
+     [:div [:button.button {:on-click #(do (set-date! nil)
                                   (dispatch-birthdate))}
           "Unset birthdate"]]]])
 

@@ -4,15 +4,15 @@
             [app.datepicker :as dp]
             [app.helpers :as h]
             [app.current-query-parameters :as cqp]
-
 ))
 
 (defn id-input []
   (let [gettext (fn [e] (-> e .-target .-value))
         emit    (fn [e] (rf/dispatch [:add-id-query-parameter
                                       (gettext e)]))]
-    [:div "Id: "
-     [:input {:type "text"
+    [:div 
+     [:div.form-input "Id: "]
+     [:input.form-input {:type "text"
               :placeholder "Enter patient id"
               :value @(rf/subscribe [:patient-id])
               :on-change emit}]]))
@@ -21,8 +21,10 @@
    (let [gettext (fn [e] (-> e .-target .-value))
          emit    (fn [e] (rf/dispatch [:add-fullname-query-parameter
                                        (gettext e)]))]
-     [:div "Full name: "
+     [:div
+      [:div.form-input "Full name: "]
       [:input {:type "text"
+               :max-length 70
                :placeholder "Enter full name"
                :value @(rf/subscribe [:fullname])
                :on-change emit}]]))
@@ -32,8 +34,10 @@
    (let [gettext (fn [e] (-> e .-target .-value))
          emit    (fn [e] (rf/dispatch [:add-insurance-query-parameter
                                        (gettext e)]))]
-     [:div "Insurance number: "
+     [:div
+      [:div.form-input "Insurance number: "]
       [:input {:type "text"
+               :max-length 20
                :placeholder "Enter insurance number"
                :value @(rf/subscribe [:insurance])
                :on-change emit}]]))
@@ -42,35 +46,44 @@
    (let [gettext (fn [e] (-> e .-target .-value))
          emit    (fn [e] (rf/dispatch [:add-address-query-parameter
                                        (gettext e)]))]
-     [:div "Address: "
+     [:div
+      [:div.form-input "Address: "]
       [:input {:type "text"
+               :max-length 200
                :placeholder "Enter address number"
                :value @(rf/subscribe [:address])
                :on-change emit}]]))
 
+(defn selected-gender []
+  [:div.selected-gender
+   @(rf/subscribe [:gender])])
 
 (defn select-gender-component []
+  [:div {:style {:font-weight "bold"}}"Select Gender"
   [:div
-   [:div.btn-group {:field :single-select :id :unique-position}
-    [:button.btn.btn-default {:key :female
+   [:div.btn-group
+    [:button.button {:key :female
                               :on-click #(rf/dispatch
-                                          [:select-gender "female"])} "female"]
-    [:button.btn.btn-default {:key :male
+                                          [:select-gender "female"])}
+     "female"]
+    [:button.button {:key :male
                               :on-click #(rf/dispatch
-                                          [:select-gender "male"])} "male"]
-    [:button.btn.btn-default {:key :other
+                                          [:select-gender "male"])}
+     "male"]
+    [:button.button {:key :other
                               :on-click #(rf/dispatch
-                                          [:select-gender "other"])} "other"]]
-   [:div (str @(rf/subscribe [:gender]))]])
+                                          [:select-gender "other"])}
+     "other"]]
+   [selected-gender]]])
 
 (defn load-all-patients-button []
-  [:button {:on-click #(rf/dispatch
+  [:button.button {:on-click #(rf/dispatch
                         [:load-all-patients])}
    "Load patients"])
 
 
 (defn load-filtered-patients-button []
-  [:button {:on-click #(rf/dispatch
+  [:button.button {:on-click #(rf/dispatch
                         [:load-patients-with-query
                          (cqp/current-query-parameters)])}
    "Load patients by parameters from the form"])
@@ -80,28 +93,35 @@
   (let [empty-values (h/find-empty-keywords
                       (cqp/current-query-parameters))
         query-parameters (cqp/current-query-parameters)]
-    [:button {:on-click #(rf/dispatch [:create-patient
-                                       query-parameters
-                                       empty-values])}
-     "Save patient"]))
+    [:div
+     [:button.button {:on-click #(rf/dispatch [:create-patient
+                                        query-parameters
+                                        empty-values])}
+     "Save patient"]]))
 
 (defn update-patient-button []
   (let [query-parameters (cqp/current-query-parameters)
         patient-id @(rf/subscribe [:patient-id])]
-    [:button {:on-click #(rf/dispatch [:update-patient
+    [:button.button {:on-click #(rf/dispatch [:update-patient
                                        patient-id
                                        (h/remove-nils-and-empty-strings
                                         query-parameters)])}
      "Update patient with current query parameters"]))
 
 (defn patient-component [patient]
-  [:div.patient
-   [:div "Id: " (:id patient)]
-   [:div "Full name: " (:fullname patient)]
-   [:div "Gender: " (:gender patient)]
-   [:div "Birthdate: " (:birthdate patient)]
-   [:div "Address: " (:address patient)]
-   [:div "Insurance-number: " (:insurance patient)]
+  [:div
+   [:span " Id: "
+    (:id patient) ]
+   [:span " Full name: "
+    (:fullname patient)]
+   [:span " Gender: "
+    (:gender patient)]
+   [:span " Birthdate: "
+    (:birthdate patient)" "]
+   [:span " Address: "
+    (:address patient) " "]
+   [:span " Insurance-number: "
+    (:insurance patient) " "]
    [:a {:href (str "#/update/" (:id patient))} "Update"]
    [:button {:on-click #(rf/dispatch [:delete-patient-with-id
                                       (:id patient)])} "Delete"]])
@@ -116,54 +136,34 @@
 
 
 (defn errors-list []
-  [:div {:style {:color "red"}} @(rf/subscribe [:form-errors])])
+  [:div {:style {:color "red"}}
+   @(rf/subscribe [:form-errors])])
 
-(defn query-form []
-  [:div
+(defn query-form [button]
+  [:div.form
    [fullname-input]
    [select-gender-component]
    [insurance-input]
    [address-input]
    [dp/datepicker-component]
+   [:hr]
+   [button]
    ])
 
-(defn form-with-user-input []
-  [:div
-   [:div "Id: " @(rf/subscribe [:patient-id])]
-   [:div "Fullname: " @(rf/subscribe [:fullname])]
-   [:div "Insurance: " (str @(rf/subscribe [:insurance]))]
-   [:div "Birthdate: " (str @(rf/subscribe [:birthdate]))]
-   [:div "Address: " (str @(rf/subscribe [:address]))]
-   [:div "Gender: " (str @(rf/subscribe [:gender]))]
-   ])
 
 (defn navigation []
-  [:div [:h1 "Navigation"]
-   [:a {:href "#/about"} "About page "]
-   [:a {:href "#/create"} "Create patient "]
-   [:a {:href "#/patients"} "All patients "]
-   [:a {:href "#/find"} "Find "]
-   [:a {:href "#/update-patient"} "Update "]
-   [:a {:href "#/debug"} "Debug"]
-   ]
-  )
-
-
-(defn ui
-  []
   [:div
-   [navigation]
-   [:h1 "Patients CRUD"]
-   [errors-list]
-   [:div "Last event: "@(rf/subscribe [:last-event])]
-   [id-input]
-   [query-form]
-   [form-with-user-input]
-   [update-patient-button]
-   [save-patient-button]
-   [:div "Debugging loading patients"]
-   [load-all-patients-button]
-   [load-filtered-patients-button]
-   [patient-list @(rf/subscribe [:patients-list]) "Queried Patients"]
+   [:ul
+    [:li [:a {:href "#/about"} "About page "]]
+    [:li [:a {:href "#/create" } "Create patient "]]
+    [:li [:a {:href "#/patients"} "All patients "]]
+    [:li [:a {:href "#/find"} "Find patients"]]
+    [:li [:a {:href "#/update-patient"} "Manual patient update "]]
+    ]
    ])
+
+(defn last-event-component []
+  [:div
+   [:div.last-event @(rf/subscribe [:last-event])]])
+
 

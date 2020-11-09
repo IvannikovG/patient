@@ -9,24 +9,31 @@
             [app.config :as cfg :refer [host port]]
             [clojure.walk :as walk]))
 
+;; HELPERS ONLY SPECIFIC HERE ;;
 
+(defn patient-by-id [id keyword db]
+  (first (filter (fn [p] (= (:id p))) (keyword db))))
+
+(defn assoc-patient-params-to-form-query-params-in-state [db patient]
+  (-> db
+      (assoc-in [:query-parameters :fullname]
+                (:fullname patient))
+      (assoc-in [:query-parameters :gender]
+                (:gender patient))
+      (assoc-in [:query-parameters :insurance]
+                (:insurance patient))
+      (assoc-in [:query-parameters :address]
+                (:address patient))
+      (assoc-in [:query-parameters :birthdate]
+                (:birthdate patient))
+      ))
 ;; INIT ;;
-
 
 (rf/reg-event-db
  :initialize
  (fn [_ _]
-   {:last-event (str "Initialised App")
+   {:last-event (str "Welcome to the Patient CRUD")
     :errors nil}))
-
-
-
-;; (rf/reg-event-db
-;;  :set-current-page
-;;  (fn [db [_ page]]
-;;    (println db)
-;;    (-> db
-;;        (assoc :page page))))
 
 (rf/reg-event-db
  :set-current-patient-id
@@ -85,6 +92,17 @@
    (-> db
        (assoc-in [:query-parameters :address] address))))
 
+
+
+(rf/reg-event-db
+ :add-all-query-parameters
+ (fn [db [_ id]]
+   (if-let [patient (patient-by-id id :patients-list db)]
+     (assoc-patient-params-to-form-query-params-in-state db patient)
+     (let [patient (patient-by-id id :filtered-patients-list db)]
+       (println patient)
+       (assoc-patient-params-to-form-query-params-in-state db patient))
+     )))
 
 ;; PATIENTS LOADERS STABLE ;;
 

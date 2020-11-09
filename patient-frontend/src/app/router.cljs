@@ -37,7 +37,7 @@
 (defn app-routes []
   (secretary/set-config! :prefix "#")
   (defroute "/" []
-    (swap! current-page-state assoc :page :home)
+    (swap! current-page-state assoc :page :about)
     )
   (defroute "/about" []
     (swap! current-page-state assoc :page :about)
@@ -56,18 +56,15 @@
   (defroute "/update/:id" {:as params}
     (swap! current-page-state assoc :page :update)
     (rf/dispatch [:add-id-query-parameter (:id params)])
+    (rf/dispatch [:add-all-query-parameters (:id params)])
     )
-  (defroute "/debug" []
-    (swap! current-page-state assoc :page :debug)
-  )
   (hook-browser-navigation!))
 
 
 
 (defmulti current-page #(@current-page-state :page))
 (defmethod current-page :home []
-  ;(println @(rf/subscribe [:log-database]))
-  [pages/home])
+  [pages/about])
 (defmethod current-page :about []
   [pages/about])
 (defmethod current-page :create []
@@ -80,8 +77,6 @@
   [pages/update-patient-with-id-page])
 (defmethod current-page :update [id]
   [pages/update-patient-page id])
-(defmethod current-page :debug []
-  [components/ui])
 (defmethod current-page :default []
   [:div ])
 
