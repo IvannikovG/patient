@@ -6,11 +6,15 @@
             [app.current-query-parameters :as cqp]
 ))
 
+(defn last-event-component []
+  [:div {:style {:margin "10px"}}
+   [:div.last-event @(rf/subscribe [:last-event])]])
+
 (defn id-input []
   (let [gettext (fn [e] (-> e .-target .-value))
         emit    (fn [e] (rf/dispatch [:add-id-query-parameter
                                       (gettext e)]))]
-    [:div 
+    [:div.form-input-wrapper
      [:div.form-input "Id: "]
      [:input.form-input {:type "text"
               :placeholder "Enter patient id"
@@ -21,7 +25,7 @@
    (let [gettext (fn [e] (-> e .-target .-value))
          emit    (fn [e] (rf/dispatch [:add-fullname-query-parameter
                                        (gettext e)]))]
-     [:div
+     [:div.form-input-wrapper
       [:div.form-input "Full name: "]
       [:input {:type "text"
                :max-length 70
@@ -34,7 +38,7 @@
    (let [gettext (fn [e] (-> e .-target .-value))
          emit    (fn [e] (rf/dispatch [:add-insurance-query-parameter
                                        (gettext e)]))]
-     [:div
+     [:div.form-input-wrapper
       [:div.form-input "Insurance number: "]
       [:input {:type "text"
                :max-length 20
@@ -46,7 +50,7 @@
    (let [gettext (fn [e] (-> e .-target .-value))
          emit    (fn [e] (rf/dispatch [:add-address-query-parameter
                                        (gettext e)]))]
-     [:div
+     [:div.form-input-wrapper
       [:div.form-input "Address: "]
       [:input {:type "text"
                :max-length 200
@@ -59,22 +63,31 @@
    @(rf/subscribe [:gender])])
 
 (defn select-gender-component []
-  [:div {:style {:font-weight "bold"}}"Select Gender"
-  [:div
+  [:div.form-input-wrapper
+   [:div.form-input "Select Gender:"
    [:div.btn-group
-    [:button.button {:key :female
-                              :on-click #(rf/dispatch
-                                          [:select-gender "female"])}
+    [:button {:class (if (= @(rf/subscribe [:gender]) "female")
+                       (str "toggled-button" )
+                       (str "button"))
+                     :key :female
+                     :on-click #(rf/dispatch
+                                 [:select-gender "female"])}
      "female"]
-    [:button.button {:key :male
-                              :on-click #(rf/dispatch
+    [:button {:class (if (= @(rf/subscribe [:gender]) "male")
+                              (str "toggled-button" )
+                              (str "button"))
+                     :key :male
+                     :on-click #(rf/dispatch
                                           [:select-gender "male"])}
      "male"]
-    [:button.button {:key :other
-                              :on-click #(rf/dispatch
+    [:button {:class (if (= @(rf/subscribe [:gender]) "other")
+                       (str "toggled-button" )
+                       (str "button"))
+                     :key :other
+                     :on-click #(rf/dispatch
                                           [:select-gender "other"])}
      "other"]]
-   [selected-gender]]])
+   ]])
 
 (defn load-all-patients-button []
   [:button.button {:on-click #(rf/dispatch
@@ -108,23 +121,63 @@
                                         query-parameters)])}
      "Update patient with current query parameters"]))
 
-(defn patient-component [patient]
+
+(defn delete-patient-button [patient]
   [:div
-   [:span " Id: "
+   [:button
+    {
+     :on-click
+     #(do (js/alert "Deleted")
+          (rf/dispatch [:delete-patient-with-id
+                    (:id patient)]))}
+    "Delete"]])
+
+(defn patient-component-2 [patient]
+  [:div.patient
+   [:span.pat-el " Id: "
     (:id patient) ]
-   [:span " Full name: "
+   [:span.pat-el" Full name: "
     (:fullname patient)]
-   [:span " Gender: "
+   [:span.pat-el " Gender: "
     (:gender patient)]
-   [:span " Birthdate: "
+   [:span.pat-el" Birthdate: "
     (:birthdate patient)" "]
-   [:span " Address: "
+   [:span.pat-el " Address: "
     (:address patient) " "]
-   [:span " Insurance-number: "
+   [:span.pat-el " Insurance-number: "
     (:insurance patient) " "]
    [:a {:href (str "#/update/" (:id patient))} "Update"]
-   [:button {:on-click #(rf/dispatch [:delete-patient-with-id
-                                      (:id patient)])} "Delete"]])
+   [delete-patient-button patient]
+   ])
+
+
+(defn patient-component [patient]
+  [:div.patient
+   [:table
+    [:thead
+    [:tr
+     [:th "ID"]
+     [:th "Full name"]
+     [:th "Gender"]
+     [:th "Birthdate"]
+     [:th "Address"]
+     [:th "Insurance number"]
+     ]
+    [:tr
+     [:td (:id patient)]
+     [:td (:fullname patient)]
+     [:td (:gender patient)]
+     [:td (:birthdate patient)]
+     [:td (:address patient)]
+     [:td (:insurance patient)]
+     ]
+    ]]
+   [:div
+   [:a {:href (str "#/update/" {:id patient})} "Update"]
+    [delete-patient-button patient]
+    ]
+   ])
+
 
 (defn patient-list [patients component-show-name]
   [:div (if (nil? patients) nil component-show-name)
@@ -148,6 +201,7 @@
    [dp/datepicker-component]
    [:hr]
    [button]
+   [last-event-component]
    ])
 
 
@@ -158,12 +212,8 @@
     [:li [:a {:href "#/create" } "Create patient "]]
     [:li [:a {:href "#/patients"} "All patients "]]
     [:li [:a {:href "#/find"} "Find patients"]]
-    [:li [:a {:href "#/update-patient"} "Manual patient update "]]
     ]
    ])
 
-(defn last-event-component []
-  [:div
-   [:div.last-event @(rf/subscribe [:last-event])]])
 
 

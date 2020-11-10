@@ -27,19 +27,21 @@
 
 (defn datepicker-component []
   [:div
-    [:div
-      [:label {:for "birthdate"} "Birthdate"]
+   [:div
+    [:div.form-input "Birthdate: "]
       [pikaday/date-selector
         {:date-atom birthdate
          :pikaday-attrs {:max-date today}
          :input-attrs {:id "birthdate"}
          :on-click (dispatch-birthdate)}]]
-   [:div {:style {:display "flex"
-                  :justify-content "center"}}
-     [:div [:button.button {:on-click #(do (set-date! today)
+   [:div
+    [:div.btn-align
+     [:button.button {
+                           :on-click #(do (set-date! today)
                                   (dispatch-birthdate))}
           "Set today"]]
-     [:div [:button.button {:on-click #(do (set-date! nil)
+    [:div.btn-align
+     [:button.button {:on-click #(do (set-date! nil)
                                   (dispatch-birthdate))}
           "Unset birthdate"]]]])
 

@@ -7,6 +7,7 @@
 (defn about []
   [:div
    [components/navigation]
+   [:div.form
    [:h1 "About Patient CRUD"]
    [:div
     [:div
@@ -19,13 +20,12 @@
            {:href "https://github.com/IvannikovG/patient"}
            "View repo on github"]]
     [:h3 "By Georgii Ivannikov"]
-    [:h3 "For Health Samurai"]]])
+    [:h3 "For Health Samurai"]]]])
 
 
 (defn create-patient-page []
   [:div
    [components/navigation]
-   [components/last-event-component]
    [components/errors-list]
    [:h1 "Create Patient via form"]
    [components/query-form

@@ -32,7 +32,7 @@
 (rf/reg-event-db
  :initialize
  (fn [_ _]
-   {:last-event (str "Welcome to the Patient CRUD")
+   {:last-event nil
     :errors nil}))
 
 (rf/reg-event-db
@@ -190,7 +190,7 @@
    ; (println "QP" query-parameters "EQP" empty-query-parameters)
    (if (empty? empty-query-parameters)
      (do (println "Parameters OK" query-parameters)
-         {:db (assoc db :last-event (str "Creating patient: "
+         {:db (assoc db :last-event (str "Created patient: "
                                          (:fullname query-parameters)))
           :http-xhrio {:method :post
                        :uri (str host ":" port "/patients")
