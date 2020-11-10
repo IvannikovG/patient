@@ -1,5 +1,5 @@
 ## Test task Health Samurai. Georgii Ivannikov
-![Image](https://i.ibb.co/CBH8C10/HS-CANDIDATE-GOSHA.png)
+![Image](https://i.ibb.co/F3qc8nK/BLOODED-HS-CANDIDATE.jpg)
 ### Projects consists of api, that hosts jsons, and front-end made with reagent / re-frame
 
 ##### To make the website work one should use 2 commands:
@@ -16,5 +16,5 @@
 ###### 28.10 - ongoing: Setup frontend
 
 ###### Current TODOs: 
-###### ⋅⋅⋅Add css (currently app looks not really well)
+###### ⋅⋅⋅Add css for patients. Forms are ready
 ###### ⋅⋅⋅More tests...
