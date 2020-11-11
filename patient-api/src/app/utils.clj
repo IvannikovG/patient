@@ -18,9 +18,10 @@
 
 
 (def names ["Alice Daby Johansen" "Bob Tyge Fiber" "James Yu Xin"
-            "Taiwenn UI PO" "Olwenne VB GH" "Rusty Van Hoven"
+            "Taiwenn Uwe Pollux" "Olwenne Thorawald Heine" "Rusty Van Hoven"
             "Serafim Alekseevich Sorovskiy" "Angel Angel Smith"
-            "Veronica Eleonora Vernitz"])
+            "Veronica Eleonora Vernitz" "Kurayama Nara Kotti"
+            "Go Eun Laysha"])
 
 (defn random-name []
   (rand-nth names))
@@ -32,10 +33,10 @@
   (let [year (rand-nth (range 1910 2021))
         month (rand-nth (range 1 13))
         day (rand-nth (range 1 32))]
-    (str year "-" month "-" day)))
+    (str month "/" day "/" year)))
 
 (defn random-address [length]
-  (random-string length))
+  (str "Street: " (random-string length)))
 
 (defn random-insurance [length]
   (random-string length))

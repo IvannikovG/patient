@@ -52,7 +52,6 @@ input:hover {
 
 table, th, td, tr {
     vertical-align: middle;
-    border-radius: 8px
 
 }
 
@@ -72,7 +71,10 @@ th {
 
 .th-header {
     font-weight: bold;
+    font-size: 14px;
     background-color: rgba(234, 234, 234, 0.6);
+    border-bottom: 1px solid;
+    border-bottom-color: rgba(200, 200, 200)
 }
 
 td:nth-child(odd) {
@@ -91,10 +93,9 @@ td:nth-child(odd) {
     text-decoration: none;
 }
 .patient {
-    width: 900px;
+    width: 1000px;
     text-align: center;
     margin: auto;
-    border-radius: 7px;
 }
 
 

@@ -134,3 +134,8 @@
 
 (defn create-n-patients-in [n table-name]
   (j/insert-multi! db-spec table-name (utils/generate-n-patients n)))
+
+
+;; LEFT THIS HERE TO , e r if i need more patients
+
+;; (create-n-patients-in 15 "patient")
