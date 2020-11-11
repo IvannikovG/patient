@@ -35,31 +35,33 @@
 (defn all-patients []
   [:div
    [components/navigation]
-   [components/last-event-component]
+   [:div {:style {:margin "auto"
+                  :text-align "center"
+                  :font-size "36px"
+                  :font-weight 500}}
+    "All patients"]
    (rf/dispatch [:load-all-patients])
    [components/patient-list
-    @(rf/subscribe [:patients-list])
-    "All found patients"]])
+    @(rf/subscribe [:patients-list])]
+   ])
 
 (defn find-patient-page []
   [:div
    [components/navigation]
-   [components/last-event-component]
    [components/errors-list]
    [:h1 "Find patients by query"]
    [components/errors-list]
    [components/query-form
     components/load-filtered-patients-button]
    [components/patient-list
-    @(rf/subscribe [:filtered-patients-list])
-    "Found these patients"]])
+    @(rf/subscribe [:filtered-patients-list])]
+   ])
 
 (defn update-patient-page [id]
   [:div
    [components/navigation]
-   [:div "Update patient"]
+   [:h1 "Update patient"]
    [components/errors-list]
-   [components/last-event-component]
    [components/query-form components/update-patient-button]
    ])
 

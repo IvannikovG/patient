@@ -7,8 +7,8 @@
 ))
 
 (defn last-event-component []
-  [:div {:style {:margin "10px"}}
-   [:div.last-event @(rf/subscribe [:last-event])]])
+  [:div
+   [:div  @(rf/subscribe [:last-event])]])
 
 (defn id-input []
   (let [gettext (fn [e] (-> e .-target .-value))
@@ -123,69 +123,61 @@
 
 
 (defn delete-patient-button [patient]
-  [:div
-   [:button
-    {
-     :on-click
+  [:div.delete-btn-wrapper-1
+   [:div.delete-btn-wrapper-2
+   [:div.delete-btn
+    {:on-click
      #(do (js/alert "Deleted")
           (rf/dispatch [:delete-patient-with-id
                     (:id patient)]))}
-    "Delete"]])
-
-(defn patient-component-2 [patient]
-  [:div.patient
-   [:span.pat-el " Id: "
-    (:id patient) ]
-   [:span.pat-el" Full name: "
-    (:fullname patient)]
-   [:span.pat-el " Gender: "
-    (:gender patient)]
-   [:span.pat-el" Birthdate: "
-    (:birthdate patient)" "]
-   [:span.pat-el " Address: "
-    (:address patient) " "]
-   [:span.pat-el " Insurance-number: "
-    (:insurance patient) " "]
-   [:a {:href (str "#/update/" (:id patient))} "Update"]
-   [delete-patient-button patient]
-   ])
+    ]]])
 
 
-(defn patient-component [patient]
-  [:div.patient
-   [:table
-    [:thead
+(defn patient-as-row [patient]
+  [:thead
+  [:tr
+   [:td (:id patient)]
+   [:td (:fullname patient)]
+   [:td (:gender patient)]
+   [:td (:birthdate patient)]
+   [:td (:address patient)]
+   [:td (:insurance patient)]
+   [:td
+    [:div
+     [:div {:style {:float "left"}}
+      [:a.update-link
+       {:href (str "#/update/" (:id patient))}
+       "Update"]]
+     [:div {:style {:float "right"}}
+      [delete-patient-button patient]]]
+    ]]]
+  )
+
+(defn patients-table [patients]
+  [:table
+   [:thead
     [:tr
-     [:th "ID"]
-     [:th "Full name"]
-     [:th "Gender"]
-     [:th "Birthdate"]
-     [:th "Address"]
-     [:th "Insurance number"]
-     ]
-    [:tr
-     [:td (:id patient)]
-     [:td (:fullname patient)]
-     [:td (:gender patient)]
-     [:td (:birthdate patient)]
-     [:td (:address patient)]
-     [:td (:insurance patient)]
-     ]
-    ]]
-   [:div
-   [:a {:href (str "#/update/" {:id patient})} "Update"]
-    [delete-patient-button patient]
-    ]
-   ])
-
+     [:td.th-header "ID"]
+     [:td.th-header "Full name"]
+     [:td.th-header "Gender"]
+     [:td.th-header "Birthdate"]
+     [:td.th-header "Address"]
+     [:td.th-header "Insurance number"]
+     [:td.th-header "Actions"]
+     ]]
+   (for [patient patients]
+     ^{:key patient} [patient-as-row patient])
+   ]
+)
 
 (defn patient-list [patients component-show-name]
-  [:div (if (nil? patients) nil component-show-name)
+  [:div.patient (if (nil? patients) nil component-show-name)
    (gstring/unescapeEntities "&nbsp;")
-   [:div
-    (for [patient patients]
-      ^{:key patient} [:div [patient-component patient]
-                       (gstring/unescapeEntities "&nbsp;")])]])
+   (if (nil? patients)
+     nil
+     [patients-table patients]
+     )
+   ])
 
 
 (defn errors-list []
@@ -201,7 +193,8 @@
    [dp/datepicker-component]
    [:hr]
    [button]
-   [last-event-component]
+   [:div.last-event
+    [last-event-component]]
    ])
 
 
@@ -210,8 +203,8 @@
    [:ul
     [:li [:a {:href "#/about"} "About page "]]
     [:li [:a {:href "#/create" } "Create patient "]]
-    [:li [:a {:href "#/patients"} "All patients "]]
     [:li [:a {:href "#/find"} "Find patients"]]
+    [:li [:a {:href "#/patients"} "All patients "]]
     ]
    ])
 

@@ -37,8 +37,7 @@ li a {
 
 li a:hover {
     background-color: #111;
-    text-decoration: none
-
+    text-decoration: none;
 }
 
 input {
@@ -52,11 +51,13 @@ input:hover {
 }
 
 table, th, td, tr {
-    border: 1px solid black;
-    border-radius: 3px;
-    text-align: center;
     vertical-align: middle;
+    border-radius: 8px
 
+}
+
+tr.tr-bottom td {
+    border-bottom: 1px, solid;
 }
 
 th, td {
@@ -65,13 +66,37 @@ th, td {
     width: 180px;
 }
 
+th {
+    text-align:justify;
+}
+
+.th-header {
+    font-weight: bold;
+    background-color: rgba(234, 234, 234, 0.6);
+}
+
+td:nth-child(odd) {
+    background-color: rgba(234, 234, 234, 0.6);
+}
+
+.update-link {
+    display: inline;
+    width: 14px;
+    border: 1px solid rgb(0, 0, 0);
+    border-radius: 12px;
+    background: #ADFF2F;
+    border-color: rgb(109, 150, 107);
+}
+.update-link:hover {
+    text-decoration: none;
+}
 .patient {
-    width: 100%;
-    display: inline-block;
-    margin: 10px;
-    border: 1px solid #ccc;
+    width: 900px;
+    text-align: center;
+    margin: auto;
     border-radius: 7px;
 }
+
 
 .patient:hover {
     box-shadow: 3px 3px 3px 3px rgba(0, 0, 0, 0.1);
@@ -88,6 +113,7 @@ th, td {
 .last-event {
     font-weight: bold;
     font-color: #203650;
+    margin-top: 4px;
 }
 
 .selected-gender {
@@ -101,7 +127,6 @@ th, td {
     padding: 14px 18px;
     border-radius: 15px;
     width: 900px;
-    margin: 25% 25% 25% 25%;
     text-align: center;
     margin: auto;
     top: 0;
@@ -142,8 +167,29 @@ th, td {
     margin-right: 8px;
 }
 
-.toggled {
-   color: blue;
+.delete-btn-wrapper-1 {
+    width: 25px;
+    height: 25px;
+    background-color: #D84331;
+    border: 1px solid black;
+    border-radius: 4px
+}
+
+.delete-btn-wrapper-2 {
+    height: 25px;
+    width: 1px;
+    margin-left: 12px;
+    background-color: black;
+    transform: rotate(45deg);
+    Z-index: 1;
+}
+
+.delete-btn {
+    height: 25px;
+    width: 25x;
+    background-color: black;
+    transform: rotate(90deg);
+    Z-index: 2;
 }
 
 .button {

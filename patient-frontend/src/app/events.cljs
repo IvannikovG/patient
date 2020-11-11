@@ -11,10 +11,14 @@
 
 ;; HELPERS ONLY SPECIFIC HERE ;;
 
-(defn patient-by-id [id keyword db]
-  (first (filter (fn [p] (= (:id p))) (keyword db))))
+(defn patient-by-id
+  [id keyword db]
+  (first (filter (fn [p] (= (:id p)
+                            (int id)))
+                 (keyword db))))
 
-(defn assoc-patient-params-to-form-query-params-in-state [db patient]
+(defn assoc-patient-params-to-form-query-params-in-state
+  [db patient]
   (-> db
       (assoc-in [:query-parameters :fullname]
                 (:fullname patient))
@@ -98,9 +102,8 @@
  :add-all-query-parameters
  (fn [db [_ id]]
    (if-let [patient (patient-by-id id :patients-list db)]
-     (assoc-patient-params-to-form-query-params-in-state db patient)
+         (assoc-patient-params-to-form-query-params-in-state db patient)
      (let [patient (patient-by-id id :filtered-patients-list db)]
-       (println patient)
        (assoc-patient-params-to-form-query-params-in-state db patient))
      )))
 
@@ -109,7 +112,6 @@
 (rf/reg-event-db
  :save-patients-into-state
  (fn [db [_ patients]]
-   ; (println patients)
    (assoc db :patients-list patients :last-event "Loaded all patients")))
 
 (rf/reg-event-db
@@ -217,7 +219,7 @@
  (fn [db [_ patient-id query-parameters]]
    (println patient-id query-parameters)
    (assoc db :last-event
-          "Reload the page to see changes to your patient")
+          "Patient updated")
  ))
 
 (rf/reg-event-fx
