@@ -224,9 +224,10 @@
 
 (rf/reg-event-fx
  :update-patient
- (fn [{:keys [db]} [_ patient-id query-parameters]]
+ (fn [{:keys [db]} [_ empty-query-parameters patient-id query-parameters]]
  (println "QP" query-parameters "PID" patient-id)
-     (do (println "Parameters OK" query-parameters)
+   (do (println "empty values " empty-query-parameters)
+       (if (empty? empty-query-parameters)
          {:db (assoc db :last-event (str "Updating patient"))
           :http-xhrio {:method :post
                        :uri (str host ":" port "/patients/"
@@ -239,5 +240,8 @@
                        :on-success [:update-patient-into-state
                                     patient-id
                                     query-parameters]
-                       :on-failure [:put-errors-into-state]}})))
+                       :on-failure [:put-errors-into-state]}}
+         {:db (assoc db :last-event (str "Failed to update patient due to empty fields: "
+                                         empty-query-parameters))}
+         ))))
 

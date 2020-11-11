@@ -113,24 +113,25 @@
      "Save patient"]]))
 
 (defn update-patient-button []
-  (let [query-parameters (cqp/current-query-parameters)
+  (let [empty-values (h/find-empty-keywords
+                      (cqp/current-query-parameters))
+        query-parameters (cqp/current-query-parameters)
         patient-id @(rf/subscribe [:patient-id])]
     [:button.button {:on-click #(rf/dispatch [:update-patient
-                                       patient-id
-                                       (h/remove-nils-and-empty-strings
-                                        query-parameters)])}
+                                              empty-values
+                                              patient-id
+                                              (h/remove-nils-and-empty-strings
+                                               query-parameters)])}
      "Update patient with current query parameters"]))
 
 
 (defn delete-patient-button [patient]
-  [:div.delete-btn-wrapper-1
-   [:div.delete-btn-wrapper-2
-   [:div.delete-btn
+   [:button.delete-button
     {:on-click
      #(do (js/alert "Deleted")
           (rf/dispatch [:delete-patient-with-id
                     (:id patient)]))}
-    ]]])
+    "Delete"])
 
 
 (defn patient-as-row [patient]
@@ -145,7 +146,7 @@
    [:td
     [:div
      [:div {:style {:float "left"}}
-      [:a.update-link
+      [:a
        {:href (str "#/update/" (:id patient))}
        "Update"]]
      [:div {:style {:float "right"}}
