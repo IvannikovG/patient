@@ -12,16 +12,16 @@
            {:status 404
             :body "Requested URI: /random-string <- 404"})))
 
-(t/deftest save-patient-page
-  (t/is (= (:status (handlers/save-patient-page
-                     {:body {:full_name "Anna Karenina"
-                             :gender "female"
-                             :birthdate "1990-11-11"
-                             :address "Address"
-                             :insurance "Insurance"}}))
-           200)))
-
-(t/deftest get-patient-page
+(t/deftest save-get-patient-page
+  (do
+    (db/drop-patient-table)
+    (db/create-patient-table)
+    (handlers/save-patient-page
+     {:body {:full_name "Anna Karenina"
+             :gender "female"
+             :birthdate "1990-11-11"
+             :address "Address"
+             :insurance "Insurance"}}))
   (t/is (= (:status (handlers/get-patient-page
                      {:params {:id "1"}}))
            200)))

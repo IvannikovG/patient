@@ -5,6 +5,7 @@
             [clj-time.core :as time]
             [clj-time.coerce :as c]))
 
+(defn now [] (new java.util.Date))
 
 (defn str-to-int [x]
   (Integer/parseInt
@@ -20,31 +21,47 @@
       true
       false)))
 
-
-(defn convert-parameters-to-valid
+(defn valid-patient-parameters
   [query-parameters]
   {:full_name (str (:full_name query-parameters))
    :gender (str (:gender query-parameters))
    :birthdate (c/to-sql-date (:birthdate query-parameters))
    :address (str (:address query-parameters))
-   :insurance (str (:insurance query-parameters))})
+   :insurance (str (:insurance query-parameters))
+   :created_at (c/to-sql-date (now))})
+
+(c/to-sql-date "1000-11-11")
+
+(defn clean-request-params [query-parameters]
+  (let [raw-data {:full_name (str (:full_name query-parameters))
+                  :gender (str (:gender query-parameters))
+                  :birthdate (c/to-sql-date (:birthdate query-parameters))
+                  :address (str (:address query-parameters))
+                  :insurance (str (:insurance query-parameters))}]
+    (apply merge (map (fn [[k v]]
+                        (if (or (= (class v) java.sql.Date)
+                                ((complement empty?) v))
+                           {k v})) raw-data)))
+  )
+
 
 ;;;; FOR  DATA GENERATION ;;;;
-;;;; UNTESTED. But they do not need tests more than ,ef ;;;;
-(defn now [] (new java.util.Date))
 (def random (java.util.Random.))
 (def chariks (map char (concat (range 48 58)
                                (range 66 92)
                                (range 97 123))))
 (defn random-char []
+  "Untested func. Generates a random character"
   (nth chariks (.nextInt random (count chariks))))
 (defn random-string [length]
+  "Generates a random string of length n"
   (apply str (take length (repeatedly random-char))))
 (defn random-sql-date []
   (c/to-sql-date (time/date-time (rand-nth (range 1940 2020))
                                  (rand-nth (range 1 13))
                                  (rand-nth (range 1 28)))))
 (defn sample-patient []
+  "Generates a random petient"
   {:full_name (random-string 5)
    :gender (random-string 5)
    :birthdate (random-sql-date)

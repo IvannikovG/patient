@@ -4,7 +4,7 @@
             [app.db :as db]
             [clj-time.core :as time]
             [clj-time.coerce :as c]
-            [app.utils :as utils]))
+            ))
 
 
 (defn page-404 [request]
@@ -24,7 +24,7 @@
     (cond (u/valid-keys? form-data)
           (do
             (db/save-patient-to-db
-             (u/convert-parameters-to-valid form-data))
+             (u/valid-patient-parameters form-data))
             {:status 200
              :headers {"content-type" "application/json"}
              :body {:patient (str "Saved patient with name: "
@@ -34,29 +34,33 @@
                 :body {:error "Patient was not saved due to empty fields"}})
     ))
 
-
 (defn get-patient-page [request]
   (let [patient-id (:id (:params request))
         patient (db/get-patient-by-id
                  (u/str-to-int patient-id))]
-    {:status 200
-     :headers {"content-type" "application/json"}
-     :body patient}))
+    (if patient
+      {:status 200
+       :headers {"content-type" "application/json"}
+       :body patient}
+      {:status 404
+       :headers {"content-type" "application/json"}
+       :body {:error "Patient was not found"}})
+    ))
 
 (defn search-patients-page [request]
   (let [params (:body request)
-        patients (db/get-patients-by-parameters
-                  params)]
+        cleaned-params (u/clean-request-params params)
+        patients (db/get-patients-by-parameters cleaned-params)]
     {:status 200
      :headers {"content-type" "application-json"}
      :body patients
-     }))
+     })
+  )
 
 (defn update-patient-page [request]
   (let [form-data (:body request)
         patient-id (u/str-to-int (:id (:params request)))
-        cleaned-data (select-keys form-data [:full_name :gender :birthdate
-                                             :address :insurance])]
+        cleaned-data (u/clean-request-params form-data)]
     (db/update-patient-with-id patient-id cleaned-data)
     {:status 200
      :headers {}
@@ -65,7 +69,7 @@
 
 
 (defn delete-patient-page [request]
-  (let [patient-id (utils/str-to-int (:id (:params request)))]
+  (let [patient-id (u/str-to-int (:id (:params request)))]
     (db/delete-patient-with-id patient-id)
     {:status 200
      :body {:patient
