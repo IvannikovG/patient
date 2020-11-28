@@ -1,88 +1,65 @@
 (ns app.routes-test
-  (:require  [clojure.test :refer :all]
+  (:require  [clojure.test :as t]
              [ring.mock.request :as mock]
              [app.router :as router]
              [app.handlers :as handlers]
-             [cheshire.core :refer [generate-string]]))
-
-(deftest get-patient-page-test
-  (is (= (router/app (mock/request :get "/patients/200"))
-         {:status 200
-          :headers {"content-type" "application/json"}
-          :body {:id 200
-                 :fullname "Test Patient"
-                 :gender "female"
-                 :birthdate "10/1/2000"
-                 :address "Test Patient"
-                 :insurance "Test Patient"
-                 :created "202011310"}})))
+             [app.db :as db]))
 
 
-(deftest find-patient-page-test
-  (is (= (router/app
-          (mock/request
-                  :get
-                  "/patients/find?gender=female&fullname=Test%20Patient"))
-         {:status 200
-          :headers {"content-type" "application-json"}
-          :body  [{:id 200
-                  :fullname "Test Patient"
-                  :gender "female"
-                  :birthdate "10/1/2000"
-                  :address "Test Patient"
-                  :insurance "Test Patient"
-                  :created "202011310"}]})))
+(t/deftest failing-page
+  (t/is (= (router/app (mock/request :get
+                                     "/random-string"))
+           {:status 404
+            :body "Requested URI: /random-string <- 404"})))
 
+(t/deftest save-patient-page
+  (t/is (= (:status (handlers/save-patient-page
+                     {:body {:full_name "Anna Karenina"
+                             :gender "female"
+                             :birthdate "1990-11-11"
+                             :address "Address"
+                             :insurance "Insurance"}}))
+           200)))
 
-(deftest update-patient-handler-test
-  (let [request {:body {:gender "male"}
-                 :params {:id "200"}}]
-    (is (= (handlers/update-patient-page request)
-           {:status 200
-            :headers {}
-            :body {:patient
-                   {:id 200
-                   :fullname "Test Patient"
-                   :gender "male"
-                   :birthdate "10/1/2000"
-                   :address "Test Patient"
-                   :insurance "Test Patient"
-                   :created "202011310"}}}))))
+(t/deftest get-patient-page
+  (t/is (= (:status (handlers/get-patient-page
+                     {:params {:id "1"}}))
+           200)))
 
+(t/deftest search-update-delete-patients
+  (do
+    (db/drop-patient-table)
+    (db/create-patient-table)
+    (handlers/save-patient-page
+       {:body {:full_name "Anna Petrovna"
+               :gender "other"
+               :birthdate "1990-11-11"
+               :address "Address"
+               :insurance "Insurance"}})
+      (handlers/save-patient-page
+       {:body {:full_name "Anna Petrovna"
+               :gender "male"
+               :birthdate "1990-11-11"
+               :address "Address"
+               :insurance "Insurance"}})
+      (handlers/update-patient-page
+       {:body {:address "Updated Address"
+               :insurance "Updated Insurance"
+               :random "Random"}
+        :params {:id "2"}}))
+  (let [patients-annas
+        (:body (handlers/search-patients-page
+                {:body {:full_name "Anna Petrovna"}}))
+        patient-anna-male
+        (:body (handlers/search-patients-page
+                {:body {:full_name "Anna Petrovna"
+                        :gender "male"}}))]
+    (t/is (and (= (count patients-annas) 2)
+               (= (count patient-anna-male) 1)
+               (= (:address (first patient-anna-male)) "Updated Address")
+               (= (:insurance (first  patient-anna-male)) "Updated Insurance")))
+    (handlers/delete-patient-page {:params {:id "2"}})
+    (t/is (= nil (db/get-patient-by-id 2)))
+    ))
 
-(deftest update-patient-handler-test-2
-  (let [request {:body {:gender "female"}
-                 :params {:id "200"}}]
-    (is (= (handlers/update-patient-page request)
-           {:status 200
-            :headers {}
-            :body {:patient
-                   {:id 200
-                    :fullname "Test Patient"
-                    :gender "female"
-                    :birthdate "11/11/2020"
-                    :address "Test Patient"
-                    :insurance "Test Patient"
-                    :created "202011310"}}}))))
-
-
-(deftest save-patient-handler-test
-  (let [request {:body {:fullname "Angel"
-                        :gender "female"
-                        :birthdate "1010/10/10"
-                        :address "Address"
-                        :insurance "Angel"}}]
-    (is (= (handlers/save-patient-page request)
-           {:status 200
-            :headers {"content-type" "application/json"}
-            :body {:patient "Saved patient with name: Angel"}}))))
-
-;; (deftest delete-patient-page
-;;   (let [request {:params {:id ""}}]))
-
-(deftest failing-page
-  (is (= (router/app (mock/request :get
-                                   "/random-string"))
-         {:status 404
-          :body "Requested URI: /random-string <- 404"})))
-
+(t/run-tests)

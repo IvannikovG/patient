@@ -19,8 +19,10 @@
     [:div [:a
            {:href "https://github.com/IvannikovG/patient"}
            "View repo on github"]]
-    [:h3 "By Georgii Ivannikov"]
-    [:h3 "For Health Samurai"]]]])
+    [:div {:style {:font-size "20px"
+                   :font-width 400}} "By Georgii Ivannikov"]
+    [:div {:style {:font-size "20px"
+                  :font-width 400}}"For Health Samurai"]]]])
 
 
 (defn create-patient-page []

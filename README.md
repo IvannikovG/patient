@@ -15,6 +15,8 @@
 ###### 22.10 - 28.10: Setup backend
 ###### 28.10 - ongoing: Setup frontend
 
-###### Current TODOs: 
-###### ⋅⋅⋅Add css for patients. Forms are ready
-###### ⋅⋅⋅More tests...
+###### Weak points: 
+###### ⋅⋅⋅No frontend tests.
+###### ⋅⋅⋅Weak database tests.
+###### ⋅⋅⋅No deployment version. 
+

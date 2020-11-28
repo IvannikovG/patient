@@ -145,11 +145,14 @@
    [:td (:insurance patient)]
    [:td
     [:div
-     [:div {:style {:float "left"}}
+     [:div {:style {:float "left"
+                    :font-size "12px"
+                    :margin-left "2px"}}
       [:a
        {:href (str "#/update/" (:id patient))}
        "Update"]]
-     [:div {:style {:float "right"}}
+     [:div {:style {:float "right"
+                    :margin-right "4px"}}
       [delete-patient-button patient]]]
     ]]]
   )

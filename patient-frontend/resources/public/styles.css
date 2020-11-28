@@ -93,7 +93,7 @@ td:nth-child(odd) {
     text-decoration: none;
 }
 .patient {
-    width: 1000px;
+    width: 900px;
     text-align: center;
     margin: auto;
 }
@@ -106,6 +106,7 @@ td:nth-child(odd) {
 }
 
 .form-input {
+    padding: 5rm;
     text-align:left;
     font-family:'Helvetica';
     margin: 5px;

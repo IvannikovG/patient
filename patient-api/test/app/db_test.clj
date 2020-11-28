@@ -1,49 +1,38 @@
-(ns db-test
+(ns app.db-test
   (:require [clojure.test :as t :refer :all]
-            [app.db :as db]
-            [clj-time.core :as time]
-            [clj-time.format :as f]))
+            [app.db :refer :all]
+            [app.utils :as utils]))
 
-
-(def custom-formatter (f/formatter "YYYYMMDD"))
-
-
-(def sample-patient {:fullname "Viktor Petrovich Suhorukov"
-                     :gender "male"
-                     :birthdate (f/unparse custom-formatter
-                                 (time/date-time 1990 01 01))
-                     :address "Moscow, 29th Street"
-                     :insurance "1234123412341234"})
-
-(def update-patient-form {:fullname "Alexa McLaren"
-                          :gender "female"
-                          :address "Moscow, 29th Street"
-                          :insurance "123412341"})
-
-(defn db-table-fixture [f]
-  (db/create-test-patient-table)
-  (f)
-  (db/drop-test-patient-table))
-
-
-(deftest create-patient-test
-  (db/create-test-patient sample-patient)
-  (let [patient (db/get-test-patient-by-id 1)]
-    (is (= (:fullname patient)
-           "Viktor Petrovich Suhorukov"))))
-
-(deftest update-patient-test
-  (db/update-test-patient 1 update-patient-form)
-  (let [patient (db/get-test-patient-by-id 1)]
-    (is (= (:fullname patient) "Alexa McLaren"))))
-
-(deftest create-and-update-test
-  (testing(create-patient-test)
-          (update-patient-test)))
-
-
-(defn patient-filter-by [& args]
+(t/deftest create-update-delete-patient
+  (do
+    (drop-patient-table)
+    (create-patient-table)
+    (save-patient-to-db {:full_name "TEST PATIENT"
+                         :gender "TEST GENDER"
+                         :birthdate (utils/random-sql-date)
+                         :address (utils/random-string 15)
+                         :insurance (utils/random-string 15)
+                         :created_at (utils/random-sql-date)
+                         }))
+  (t/is (= (:full_name (get-patient-by-id 1))
+           "TEST PATIENT"))
+  (t/is (= (:full_name (get-patients-by-parameters {:full_name "TEST PATIENT"}))))
+  (save-patient-to-db {:full_name "TEST PATIENT"
+                       :gender "female"
+                       :birthdate (utils/random-sql-date)
+                       :address (utils/random-string 15)
+                       :insurance (utils/random-string 15)
+                       :created_at (utils/random-sql-date)
+                       })
+  (t/is (= (count (get-patients-by-parameters {:full_name "TEST PATIENT"
+                                                      :gender "female"})) 1))
+  (update-patient-with-id 1 {:full_name "UPDATED"})
+  (t/is (= (:full_name (get-patient-by-id 1))
+           "UPDATED"))
+  (delete-patient-with-id 1)
+  (delete-patient-with-id 2)
+  (t/is (nil? (get-patient-by-id 1)))
   )
 
-(use-fixtures :once db-table-fixture)
+(t/run-tests)
 

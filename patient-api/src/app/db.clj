@@ -2,43 +2,48 @@
   (:require [clojure.java.jdbc :as j]
             [clj-time.core :as time]
             [clj-time.format :as f]
+            [clj-time.coerce :as c]
             [app.utils :as utils]
             ))
 
 
 ;; CONSTANTS ;;
 
-(def database-type (System/getenv "DATABASE_TYPE"))
-(def database-name (System/getenv "DATABASE_NAME"))
-(def database-user (System/getenv "DATABASE_USER"))
-(def database-password (System/getenv "DATABASE_PASSWORD"))
 
-(def custom-formatter (f/formatter "YYYYMMDD"))
+(def database-type "postgresql")
+(def database-name "test_patient")
+(def database-user "georgii")
+(def database-password "blank")
+
+;; (def database-type "postgresql")
+;; (def database-name "patient")
+;; (def database-user "georgii")
+;; (def database-password "blank")
 
 (def db-spec {:dbtype database-type
               :dbname database-name
               :user database-user
               :password database-password})
 
+(def custom-formatter (f/formatter "YYYYMMDD"))
+
 (def patient-table-description
-   [[:id "SERIAL"]
-    [:fullname "varchar(70) NOT NULL"]
-    [:gender "varchar(15) NOT NULL"]
-    [:birthdate "varchar(70) NOT NULL"]
-    [:address "varchar(200)"]
-    [:insurance "varchar(20)"]
-    [:created "varchar(100)"]])
+  [[:id "SERIAL"]
+   [:full_name "varchar(70) NOT NULL"]
+   [:gender "varchar(15) NOT NULL"]
+   [:birthdate "TIMESTAMPTZ"]
+   [:address "varchar(70) NOT NULL"]
+   [:insurance "varchar(200) NOT NULL"]
+   [:created_at "TIMESTAMPTZ"]])
 
-(def patient-table-ddl
-  (j/create-table-ddl :patient
-                      patient-table-description))
-
-(def test-patient-table-ddl
-  (j/create-table-ddl :testpatient
-                      patient-table-description))
 
 
 ;; FUNCTIONS for TABLES ;;
+
+(def patient-table-ddl
+  (j/create-table-ddl :patient
+                      patient-table-description
+                      {:conditional? true}))
 
 (defn create-table [ddl]
   (j/db-do-commands db-spec [ddl]))
@@ -46,96 +51,56 @@
 (defn create-patient-table []
   (create-table patient-table-ddl))
 
-
-(defn create-test-patient-table []
-  (create-table test-patient-table-ddl))
-
-
-(defn drop-table [table-name]
-  "Table name as keyword"
-  (j/db-do-commands db-spec
-   (j/drop-table-ddl table-name)))
-
-(defn drop-test-patient-table []
-  (drop-table :testpatient))
+(defn drop-patient-table []
+  (let [drop-table-ddl (j/drop-table-ddl
+                        :patient
+                        {:conditional? true})]
+    (j/execute! db-spec drop-table-ddl)))
 
 ;; SELECT functions
 
 (defn get-all-patients []
-  (j/query db-spec "SELECT * FROM patient"))
-
-(defn get-pat-by-id [id table-name]
-  (j/get-by-id db-spec "patient" id))
+  (let [patients (j/query
+                  db-spec
+                  ["SELECT * FROM patient"])]
+    patients))
 
 (defn get-patient-by-id [id]
-  (get-pat-by-id id "patient"))
+  (let [patient (j/get-by-id
+                 db-spec
+                 :patient
+                 id)]
+    patient))
 
-(defn get-test-patient-by-id [id]
-  (get-pat-by-id id "testpatient"))
-
+(defn get-patients-by-parameters [parameters]
+  (let [patients (j/find-by-keys
+                  db-spec
+                  :patient
+                  parameters)]
+    patients))
 
 ;; INSERT/UPDATE functions
 
-(defn create-pat [form table-name]
-  (let [{:keys [fullname
-                gender
-                birthdate
-                address
-                insurance]} form]
-    (j/insert-multi! db-spec table-name
-                    [{:fullname fullname
-                      :gender gender
-                      :birthdate birthdate
-                      :address address
-                      :insurance insurance
-                      :created (f/unparse custom-formatter
-                                          (time/now))}])))
+(defn save-patient-to-db [patient]
+  (j/insert! db-spec
+             :patient
+             patient))
 
-(defn create-patient [form]
-  (create-pat form :patient))
-
-(defn create-test-patient [form]
-  (create-pat form :testpatient))
-
-(defn update-pat [form id table-name]
-  (j/update! db-spec table-name
-             form ["id=?" id]))
-
-(defn update-patient [id form]
-  (update-pat form id :patient))
-
-(defn update-test-patient [id form]
-  (update-pat form id :testpatient))
+(defn update-patient-with-id [id parameters]
+  (j/update! db-spec
+             :patient
+             parameters
+             ["id=?" id]))
 
 
 ;; DELETE functions
 
-(defn delete-pat [id table-name]
-  (j/delete! db-spec table-name ["id=?" id]))
-
-(defn delete-patient [id]
-  (delete-pat id :patient))
-
-(defn delete-test-patient [id]
-  (delete-pat id :testpatient))
+(defn delete-patient-with-id [id]
+  (j/delete! db-spec
+             :patient
+             ["id = ?" id]))
 
 
-;; FILTERING
-
-(defn filter-by [search-config table-name]
-  "By {:gender female}"
-  (j/find-by-keys db-spec table-name search-config))
-
-(defn filter-patients-by [search-config]
-  (if (empty? search-config)
-    (vec (get-all-patients))
-    (vec (filter-by search-config :patient))))
-
-
-(defn create-n-patients-in [n table-name]
-  (j/insert-multi! db-spec table-name (utils/generate-n-patients n)))
-
-
-;; LEFT THIS HERE TO , e r if i need more patients
-
-;; (create-n-patients-in 15 "patient")
+;; Patient generator
+(defn save-n-patients-to-db [n]
+  (take n (repeatedly #(save-patient-to-db (utils/sample-patient)))))

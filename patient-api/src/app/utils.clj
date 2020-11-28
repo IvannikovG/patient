@@ -1,55 +1,55 @@
 (ns app.utils
-  (:require [clojure.java.jdbc :as j]))
+  (:require [clojure.java.jdbc :as j]
+            [clojure.walk :as walk]
+            [ring.util.codec :refer [form-decode]]
+            [clj-time.core :as time]
+            [clj-time.coerce :as c]))
 
-(defn strToInt [x]
+
+(defn str-to-int [x]
   (Integer/parseInt
    (apply str (filter #(Character/isDigit %) x))))
 
+
+(defn valid-keys? [form-data]
+  (let [needed-keywords [:full_name :gender :birthdate
+                         :address :insurance]]
+    (if (every? true? (map (fn [el]
+                             (contains? form-data el))
+                             needed-keywords))
+      true
+      false)))
+
+
+(defn convert-parameters-to-valid
+  [query-parameters]
+  {:full_name (str (:full_name query-parameters))
+   :gender (str (:gender query-parameters))
+   :birthdate (c/to-sql-date (:birthdate query-parameters))
+   :address (str (:address query-parameters))
+   :insurance (str (:insurance query-parameters))})
+
+;;;; FOR  DATA GENERATION ;;;;
+;;;; UNTESTED. But they do not need tests more than ,ef ;;;;
+(defn now [] (new java.util.Date))
 (def random (java.util.Random.))
-
-(def characters
-  (map char (concat (range 48 58) (range 66 92) (range 97 123))))
-
+(def chariks (map char (concat (range 48 58)
+                               (range 66 92)
+                               (range 97 123))))
 (defn random-char []
-  (nth characters (.nextInt random (count characters))))
-
+  (nth chariks (.nextInt random (count chariks))))
 (defn random-string [length]
   (apply str (take length (repeatedly random-char))))
-
-
-(def names ["Alice Daby Johansen" "Bob Tyge Fiber" "James Yu Xin"
-            "Taiwenn Uwe Pollux" "Olwenne Thorawald Heine" "Rusty Van Hoven"
-            "Serafim Alekseevich Sorovskiy" "Angel Angel Smith"
-            "Veronica Eleonora Vernitz" "Kurayama Nara Kotti"
-            "Go Eun Laysha"])
-
-(defn random-name []
-  (rand-nth names))
-
-(defn random-gender []
-  (rand-nth ["female" "male" "other"]))
-
-(defn random-birth-date []
-  (let [year (rand-nth (range 1910 2021))
-        month (rand-nth (range 1 13))
-        day (rand-nth (range 1 32))]
-    (str month "/" day "/" year)))
-
-(defn random-address [length]
-  (str "Street: " (random-string length)))
-
-(defn random-insurance [length]
-  (random-string length))
-
-
-(defn generate-random-patient-edn []
-  {:fullname (random-name)
-   :gender (random-gender)
-   :birthdate (random-birth-date)
-   :address (random-address 10)
-   :insurance (random-insurance 10)})
-
-(defn generate-n-patients [n]
-  (take n (repeatedly generate-random-patient-edn)))
-
+(defn random-sql-date []
+  (c/to-sql-date (time/date-time (rand-nth (range 1940 2020))
+                                 (rand-nth (range 1 13))
+                                 (rand-nth (range 1 28)))))
+(defn sample-patient []
+  {:full_name (random-string 5)
+   :gender (random-string 5)
+   :birthdate (random-sql-date)
+   :address (random-string 15)
+   :insurance (random-string 15)
+   :created_at (random-sql-date)
+   })
 

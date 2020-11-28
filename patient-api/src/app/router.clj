@@ -18,7 +18,7 @@
            (GET "/find" request (search-patients-page request))
            (GET "/:id" [id :as request] (get-patient-page request))
            (POST "/:id/update"
-                 [id :as request] (update-patient-page request))
+                  [id :as request] (update-patient-page request))
            (DELETE "/:id/delete" [id :as request]
                    (delete-patient-page request))
            )
@@ -26,6 +26,7 @@
 
 (defn reloadable-app []
   (wrap-reload #'app))
+
 
 (defn wrapped-app []
   (-> (reloadable-app)
