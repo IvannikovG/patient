@@ -21,6 +21,7 @@
                                       :insurance "Sample"})
              {:insurance "Sample"}))
     (t/is (= 5 (count (u/random-string 5))))
+    (t/is (= (u/format-date "11/29/2020") "2020-11-29"))
     (t/is (true? (u/valid-keys? {:full_name "Sample"
                                  :gender "Sample"
                                  :birthdate "Sample"

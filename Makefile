@@ -8,7 +8,7 @@ down:
 	docker-compose down
 
 test-backend:
-	cd patient-api && clj -M:test -d test
+	source test.env && docker-compose down && docker-compose up -d &&	cd patient-api && clj -M:test -d test
 
 backend:
-	cd patient-api && clj -X app.router/main
+	source test.env && docker-compose down && docker-compose up -d &&	cd patient-api &&	clj -X app.router/main

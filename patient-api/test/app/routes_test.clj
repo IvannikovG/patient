@@ -49,11 +49,11 @@
         :params {:id "2"}}))
   (let [patients-annas
         (:body (handlers/search-patients-page
-                {:body {:full_name "Anna Petrovna"}}))
+                {:query-params {:full_name "Anna Petrovna"}}))
         patient-anna-male
         (:body (handlers/search-patients-page
-                {:body {:full_name "Anna Petrovna"
-                        :gender "male"}}))]
+                {:query-params {:full_name "Anna Petrovna"
+                                :gender "male"}}))]
     (t/is (and (= (count patients-annas) 2)
                (= (count patient-anna-male) 1)
                (= (:address (first patient-anna-male)) "Updated Address")

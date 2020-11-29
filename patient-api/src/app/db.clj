@@ -10,11 +10,11 @@
 ;; CONSTANTS ;;
 
 
-(def database-type "postgresql")
-(def database-name "test_patient")
-(def database-user "georgii")
-(def database-password "blank")
-
+(def database-type (System/getenv "DATABASE_TYPE"))
+(def database-name (System/getenv "DATABASE_NAME"))
+(def database-user (System/getenv "DATABASE_USER"))
+(def database-password
+  (System/getenv "DATABASE_PASSWORD"))
 ;; (def database-type "postgresql")
 ;; (def database-name "patient")
 ;; (def database-user "georgii")

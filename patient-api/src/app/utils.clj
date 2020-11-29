@@ -7,10 +7,20 @@
 
 (defn now [] (new java.util.Date))
 
+(defn format-date [date]
+  (when ((complement nil?) date)
+    (let [date-contents (clojure.string/split date #"/")]
+      (if (= (count date-contents) 3)
+        (clojure.string/join "-" [(last date-contents)
+                                  (first date-contents)
+                                  (second date-contents)
+                                  ])
+        date)))
+  )
+
 (defn str-to-int [x]
   (Integer/parseInt
    (apply str (filter #(Character/isDigit %) x))))
-
 
 (defn valid-keys? [form-data]
   (let [needed-keywords [:full_name :gender :birthdate
@@ -21,21 +31,26 @@
       true
       false)))
 
+(c/to-sql-date "2020-11-29")
+
 (defn valid-patient-parameters
   [query-parameters]
   {:full_name (str (:full_name query-parameters))
    :gender (str (:gender query-parameters))
-   :birthdate (c/to-sql-date (:birthdate query-parameters))
+   :birthdate (c/to-sql-date (format-date (:birthdate query-parameters)))
    :address (str (:address query-parameters))
    :insurance (str (:insurance query-parameters))
    :created_at (c/to-sql-date (now))})
 
-(c/to-sql-date "1000-11-11")
+(valid-patient-parameters {:full_name "Karenina", :gender "female",
+                           :birthdate "11/29/2020",
+                           :address "Address", :insurance "Insurance"})
 
 (defn clean-request-params [query-parameters]
   (let [raw-data {:full_name (str (:full_name query-parameters))
                   :gender (str (:gender query-parameters))
-                  :birthdate (c/to-sql-date (:birthdate query-parameters))
+                  :birthdate (c/to-sql-date
+                              (format-date (:birthdate query-parameters)))
                   :address (str (:address query-parameters))
                   :insurance (str (:insurance query-parameters))}]
     (apply merge (map (fn [[k v]]
