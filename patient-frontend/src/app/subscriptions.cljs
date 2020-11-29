@@ -36,9 +36,9 @@
    (get-in db [:query-parameters :patient-id])))
 
 (rf/reg-sub
- :fullname
+ :full_name
  (fn [db _]
-   (get-in db [:query-parameters :fullname])))
+   (get-in db [:query-parameters :full_name])))
 
 
 (rf/reg-sub

@@ -4,7 +4,7 @@
 
 
 (defn current-query-parameters []
-  {:fullname @(rf/subscribe [:fullname])
+  {:full_name @(rf/subscribe [:full_name])
    :gender @(rf/subscribe [:gender])
    :birthdate @(rf/subscribe [:birthdate])
    :address @(rf/subscribe [:address])

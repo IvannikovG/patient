@@ -20,8 +20,8 @@
 (defn assoc-patient-params-to-form-query-params-in-state
   [db patient]
   (-> db
-      (assoc-in [:query-parameters :fullname]
-                (:fullname patient))
+      (assoc-in [:query-parameters :full_name]
+                (:full_name patient))
       (assoc-in [:query-parameters :gender]
                 (:gender patient))
       (assoc-in [:query-parameters :insurance]
@@ -66,7 +66,7 @@
  :add-fullname-query-parameter
  (fn [db [_ fullname]]
    (-> db
-       (assoc-in [:query-parameters :fullname] fullname))))
+       (assoc-in [:query-parameters :full_name] fullname))))
 
 
 (rf/reg-event-db
@@ -125,10 +125,11 @@
  (fn [{:keys [db]} _]
    (println "DB" db )
    {:http-xhrio {:method :get
-                :uri (str host ":" port "/patients")
-                :response-format (ajax/json-response-format {:keywords? true})
-                :on-success [:save-patients-into-state]
-                :on-failure [:put-errors-into-state]}}))
+                 :uri (str host ":" port "/patients")
+                 :response-format (ajax/json-response-format
+                                   {:keywords? true})
+                 :on-success [:save-patients-into-state]
+                 :on-failure [:put-errors-into-state]}}))
 
 
 
@@ -137,22 +138,25 @@
  (fn [db [_ patients]]
    (println db)
    (-> db
-       (assoc :filtered-patients-list patients :last-event "Filtered patients"))))
+       (assoc :filtered-patients-list patients
+              :last-event "Filtered patients"))))
 
 
 (rf/reg-event-fx
  :load-patients-with-query
  (fn [{:keys [db]} [_ query-parameters]]
-   (println db)
-   {:db (assoc db :last-event (str
-                               "Loaded patients with following query parameters: "
-                               (h/remove-nils-and-empty-strings query-parameters)))
+   (println (h/remove-nils-and-empty-strings
+             (h/stringify-map-keywords query-parameters)))
+   {:db (assoc db :last-event
+               (str
+                "Loaded patients with following query parameters: "
+                (h/remove-nils-and-empty-strings query-parameters)))
     :http-xhrio {:method :get
                  :uri (str host ":" port "/patients/find")
                  :response-format (ajax/json-response-format
                                    {:keywords? true})
                  :params (h/remove-nils-and-empty-strings
-                          (h/stringify-map-keywords query-parameters))
+                        (h/stringify-map-keywords query-parameters))
                  :on-success [:save-filtered-patients-into-state]
                  :on-failure [:put-errors-into-state]}}))
 
@@ -180,7 +184,8 @@
                  :uri (str host ":" port "/patients/"
                            patient-id "/delete")
                  :format (ajax/json-request-format)
-                 :response-format (ajax/json-response-format {:keywords? true})
+                 :response-format (ajax/json-response-format
+                                   {:keywords? true})
                  :on-success [:delete-patient-from-state patient-id]
                  :on-failure [:put-errors-into-state]}}))
 
@@ -193,7 +198,7 @@
    (if (empty? empty-query-parameters)
      (do (println "Parameters OK" query-parameters)
          {:db (assoc db :last-event (str "Created patient: "
-                                         (:fullname query-parameters)))
+                                         (:full_name query-parameters)))
           :http-xhrio {:method :post
                        :uri (str host ":" port "/patients")
                        :format (ajax/json-request-format)
@@ -202,7 +207,8 @@
                                          {:keywords? true})
                        :on-success [:save-patient query-parameters]
                        :on-failure [:put-errors-into-state]}})
-     {:db (assoc db :last-event (str "Failed to save patient due to empty fields: "
+     {:db (assoc db :last-event
+                 (str "Failed to save patient due to empty fields: "
                                      empty-query-parameters))})))
 
 (rf/reg-event-db
@@ -241,7 +247,8 @@
                                     patient-id
                                     query-parameters]
                        :on-failure [:put-errors-into-state]}}
-         {:db (assoc db :last-event (str "Failed to update patient due to empty fields: "
+         {:db (assoc db :last-event
+                     (str "Failed to update patient due to empty fields: "
                                          empty-query-parameters))}
          ))))
 

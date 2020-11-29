@@ -30,9 +30,8 @@
       [:input {:type "text"
                :max-length 70
                :placeholder "Enter full name"
-               :value @(rf/subscribe [:fullname])
+               :value @(rf/subscribe [:full_name])
                :on-change emit}]]))
-
 
  (defn insurance-input []
    (let [gettext (fn [e] (-> e .-target .-value))
@@ -117,10 +116,11 @@
                       (cqp/current-query-parameters))
         query-parameters (cqp/current-query-parameters)
         patient-id @(rf/subscribe [:patient-id])]
-    [:button.button {:on-click #(rf/dispatch [:update-patient
-                                              empty-values
-                                              patient-id
-                                              (h/remove-nils-and-empty-strings
+    [:button.button {:on-click #(rf/dispatch
+                                 [:update-patient
+                                  empty-values
+                                  patient-id
+                                  (h/remove-nils-and-empty-strings
                                                query-parameters)])}
      "Update patient with current query parameters"]))
 
@@ -138,9 +138,9 @@
   [:thead
   [:tr
    [:td (:id patient)]
-   [:td (:fullname patient)]
+   [:td (:full_name patient)]
    [:td (:gender patient)]
-   [:td (:birthdate patient)]
+   [:td (take 10(:birthdate patient))]
    [:td (:address patient)]
    [:td (:insurance patient)]
    [:td
@@ -175,7 +175,9 @@
 )
 
 (defn patient-list [patients component-show-name]
-  [:div.patient (if (nil? patients) nil component-show-name)
+  [:div.patient (if (nil? patients)
+                  nil
+                  component-show-name)
    (gstring/unescapeEntities "&nbsp;")
    (if (nil? patients)
      nil
