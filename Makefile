@@ -1,5 +1,5 @@
 help:
-	@echo "This will help you eventually"
+	@echo "To test the app run <make test-backend>. To start <make backend>"
 
 up:
 	docker-compose up -d
