@@ -19,6 +19,7 @@
 
         ;; ;;
         clj-time/clj-time {:mvn/version "0.15.2"}
+        clojure-data/clojure-data {:mvn/version "0.1.4"}
 
         ;; TESTING DEPS ;;
         ring/ring-mock {:mvn/version "0.4.0"}

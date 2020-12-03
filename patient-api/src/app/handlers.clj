@@ -65,7 +65,7 @@
         cleaned-data (u/clean-request-params form-data)]
     (db/update-patient-with-id patient-id cleaned-data)
     {:status 200
-     :headers {}
+     :headers {"content-type" "application-json"}
      :body {:patient (db/get-patient-by-id patient-id)}
      }))
 
@@ -75,5 +75,28 @@
     (db/delete-patient-with-id patient-id)
     {:status 200
      :body {:patient
+            :headers {"content-type" "application-json"}
             (format "Patient with id %s was deleted" patient-id)}}))
+
+
+(defn master-patient-index-page [request]
+  (let [patient-data (:body request)
+        existent-patients (u/convert-patients-entries-to-raw
+                  (db/get-all-patients))
+        will-not-save-patient (u/will-not-save-patient?
+                               patient-data existent-patients)]
+    (if will-not-save-patient
+      {:status 200
+       :headers {"content-type" "application-json"}
+       :body (str "Patient with provided data: "
+                  patient-data
+                  " exists.")}
+       (do
+         (db/save-patient-to-db
+          (u/valid-patient-parameters patient-data))
+         {:status 200
+          :headers {"content-type" "application/json"}
+          :body {:patient (str "Saved patient with name: "
+                               (:full_name patient-data))}})
+      )))
 

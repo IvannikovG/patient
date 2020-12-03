@@ -104,3 +104,4 @@
 ;; Patient generator
 (defn save-n-patients-to-db [n]
   (take n (repeatedly #(save-patient-to-db (utils/sample-patient)))))
+

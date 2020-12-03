@@ -26,6 +26,40 @@
                      {:params {:id "1"}}))
            200)))
 
+(t/deftest patient-master-index-page
+  (do
+    (db/drop-patient-table)
+    (db/create-patient-table)
+    (handlers/master-patient-index-page
+     {:body {:full_name "Anna Petrovna"
+              :gender "other"
+              :birthdate "1990-11-11"
+              :address "Address"
+             :insurance "Insurance"}})
+    (t/is (= (:status (handlers/get-patient-page
+                        {:params {:id "1"}}))
+              200))
+     (handlers/master-patient-index-page
+      {:body {:full_name "Anna Petrovna"
+              :gender "other"
+              :birthdate "1990-11-11"
+              :address "Address"
+              :insurance "Insurance"}})
+     (t/is (= (:status (handlers/get-patient-page
+                        {:params {:id "2"}}))
+              404))
+     (handlers/master-patient-index-page
+      {:body {:full_name "Ann Petrovna"
+              :gender "othe"
+              :birthdate "1990-11-11"
+              :address "Addres"
+              :insurance "Insurance"}})
+     (t/is (= (:status (handlers/get-patient-page
+                        {:params {:id "2"}}))
+              404))
+     )
+  )
+
 (t/deftest search-update-delete-patients
   (do
     (db/drop-patient-table)

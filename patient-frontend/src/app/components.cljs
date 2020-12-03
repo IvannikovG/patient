@@ -6,9 +6,36 @@
             [app.current-query-parameters :as cqp]
 ))
 
+(defn h1-component [content]
+  [:div {:style {:margin "auto"
+                 :display "flex"
+                 :justify-content "center"
+                 :font-size "36px"
+                 :font-weight 500}}
+   content])
+
+(defn about-component []
+  [:div
+   [:div.about-container
+    [:div
+     [:h1 {:style {:margin "8px"}}
+      "Patient CRUD demo"]
+     [:div.description
+      "This app is made using reagent/re-frame on frontend"]
+     [:div.description
+      "Ring/compojure are serving the backend"]
+     [:div.description
+      "To store data PostgreSQL is used, jdbc to connect to it"]
+     [:div.by [:a
+               {:href "https://github.com/IvannikovG/patient"}
+               "View repo on github"]]
+     [:div.by "By Georgii Ivannikov"]
+     [:div.by "For Health Samurai"]]]])
+
+
 (defn last-event-component []
   [:div
-   [:div  @(rf/subscribe [:last-event])]])
+   [:div @(rf/subscribe [:last-event])]])
 
 (defn id-input []
   (let [gettext (fn [e] (-> e .-target .-value))
@@ -57,9 +84,6 @@
                :value @(rf/subscribe [:address])
                :on-change emit}]]))
 
-(defn selected-gender []
-  [:div.selected-gender
-   @(rf/subscribe [:gender])])
 
 (defn select-gender-component []
   [:div.form-input-wrapper
@@ -98,7 +122,7 @@
   [:button.button {:on-click #(rf/dispatch
                         [:load-patients-with-query
                          (cqp/current-query-parameters)])}
-   "Load patients by parameters from the form"])
+   "Find patients"])
 
 
 (defn save-patient-button []
@@ -140,7 +164,7 @@
    [:td (:id patient)]
    [:td (:full_name patient)]
    [:td (:gender patient)]
-   [:td (take 10(:birthdate patient))]
+   [:td (take 10 (:birthdate patient))]
    [:td (:address patient)]
    [:td (:insurance patient)]
    [:td
@@ -175,11 +199,12 @@
 )
 
 (defn patient-list [patients component-show-name]
-  [:div.patient (if (nil? patients)
+  [:div.patient-table (if (nil? patients)
                   nil
                   component-show-name)
    (gstring/unescapeEntities "&nbsp;")
-   (if (nil? patients)
+   (if (or (empty? patients)
+           (nil? patients))
      nil
      [patients-table patients]
      )

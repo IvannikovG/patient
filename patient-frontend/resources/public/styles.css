@@ -1,8 +1,5 @@
 
-h1 {
-    text-align: center;
-}
-
+/* ul is only used for navigation bar */
 ul {
     list-style-type: none;
     margin: 0;
@@ -11,28 +8,39 @@ ul {
     background-color: #333;
 }
 
+/* CSS for about page */
+.description {
+    font-family: "Helvetica";
+    margin: 6px;
+}
+
+.by {
+    font-family: "Courier new";
+    margin: 12px;
+}
+
 a {
-    display: block;
+    display: flex;
+    align-items: center;
+    justify-content: center;
     padding: 8px;
     background-color: #dddddd;
     text-decoration: none
-
 }
 
 li {
-    float: left;
+    display: inline-flex;
     border-right: 1px solid #bbb;
 }
+
 li:last-child {
     border-right: none; 
 }
-li a {
-    display: block;
-    color: white;
-    text-align: center;
-    padding: 14px 16px;
-    text-decoration: none
 
+li a {
+    color: white;
+    padding: 12px 18px;
+    text-decoration: none
 }
 
 li a:hover {
@@ -41,33 +49,17 @@ li a:hover {
 }
 
 input {
-    padding: 5px;
+    padding: 8px;
     width: 100%;
-    margin-left: 0;
 }
 
-input:hover {
-    box-shadow: 10px 10px black;
-}
-
-table, th, td, tr {
-    vertical-align: middle;
-
-}
-
-tr.tr-bottom td {
-    border-bottom: 1px, solid;
-}
 
 th, td {
-    padding: 5px;
+    flex-flow: wrap;
     height: 50px;
     width: 180px;
 }
 
-th {
-    text-align:justify;
-}
 
 .th-header {
     font-weight: bold;
@@ -81,35 +73,16 @@ td:nth-child(odd) {
     background-color: rgba(234, 234, 234, 0.6);
 }
 
-.update-link {
-    display: inline;
-    width: 14px;
-    border: 1px solid rgb(0, 0, 0);
-    border-radius: 12px;
-    background: #8FBC8F;
-    border-color: rgb(109, 150, 107);
-}
-.update-link:hover {
-    text-decoration: none;
-}
-.patient {
+.patient-table {
     width: 900px;
     text-align: center;
     margin: auto;
 }
 
-
-.patient:hover {
-    box-shadow: 3px 3px 3px 3px rgba(0, 0, 0, 0.1);
-    -webkit-transition: all 0.6s cubic-bezier(0.165, 0.84, 0.44, 1);
-    transition: all 0.6s cubic-bezier(0.165, 0.84, 0.44, 1);
-}
-
 .form-input {
-    padding: 5rm;
     text-align:left;
     font-family:'Helvetica';
-    margin: 5px;
+    margin: 6px;
 }
 
 .last-event {
@@ -118,13 +91,18 @@ td:nth-child(odd) {
     margin-top: 4px;
 }
 
-.selected-gender {
-    border: 1px solid #ccc;
-}
-
 .form-input-wrapper {
     padding-bottom: 15px;
 }
+
+.about-container {
+    display: flex;
+    justify-content: center;
+    text-align: center;
+    align-items: center;
+    height: 80vh;
+}
+
 .form {
     padding: 14px 18px;
     border-radius: 15px;

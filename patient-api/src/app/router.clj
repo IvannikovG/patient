@@ -6,23 +6,24 @@
             [ring.middleware.params :refer [wrap-params]]
             [ring.middleware.keyword-params :refer [wrap-keyword-params]]
             [jumblerg.middleware.cors :refer [wrap-cors]]
-            [app.handlers :refer :all]
+            [app.handlers :as h]
             [ring.logger :as logger]))
 
 
 (defroutes app
   (GET "/" [] "CRUD PATIENT")
   (context "/patients" request
-           (GET "/" request (patients-page request))
-           (POST "/" request (save-patient-page request))
-           (GET "/find" request (search-patients-page request))
-           (GET "/:id" [id :as request] (get-patient-page request))
+           (GET "/" request (h/patients-page request))
+           (POST "/" request (h/save-patient-page request))
+           (POST "/master" request (h/master-patient-index-page request))
+           (GET "/find" request (h/search-patients-page request))
+           (GET "/:id" [id :as request] (h/get-patient-page request))
            (POST "/:id/update"
-                  [id :as request] (update-patient-page request))
+                  [id :as request] (h/update-patient-page request))
            (DELETE "/:id/delete" [id :as request]
-                   (delete-patient-page request))
+                   (h/delete-patient-page request))
            )
-  page-404)
+  h/page-404)
 
 (defn reloadable-app []
   (wrap-reload #'app))

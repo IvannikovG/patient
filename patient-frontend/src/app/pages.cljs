@@ -7,29 +7,14 @@
 (defn about []
   [:div
    [components/navigation]
-   [:div.form
-   [:h1 "About Patient CRUD"]
-   [:div
-    [:div
-     "This app is made using reagent/re-frame on frontend"]
-    [:div
-     "Ring/compojure are serving the backend"]
-    [:div
-     "To store data PostgreSQL is used, jdbc to connect to it"]
-    [:div [:a
-           {:href "https://github.com/IvannikovG/patient"}
-           "View repo on github"]]
-    [:div {:style {:font-size "20px"
-                   :font-width 400}} "By Georgii Ivannikov"]
-    [:div {:style {:font-size "20px"
-                  :font-width 400}}"For Health Samurai"]]]])
+   [components/about-component]])
 
 
 (defn create-patient-page []
   [:div
    [components/navigation]
    [components/errors-list]
-   [:h1 "Create Patient via form"]
+   [components/h1-component "Create new patient"]
    [components/query-form
     components/save-patient-button]
    ])
@@ -37,11 +22,7 @@
 (defn all-patients []
   [:div
    [components/navigation]
-   [:div {:style {:margin "auto"
-                  :text-align "center"
-                  :font-size "36px"
-                  :font-weight 500}}
-    "All patients"]
+   [components/h1-component "All patients"]
    (rf/dispatch [:load-all-patients])
    [components/patient-list
     @(rf/subscribe [:patients-list])]
@@ -51,8 +32,7 @@
   [:div
    [components/navigation]
    [components/errors-list]
-   [:h1 "Find patients by query"]
-   [components/errors-list]
+   [components/h1-component "Find patients"]
    [components/query-form
     components/load-filtered-patients-button]
    [components/patient-list
@@ -62,7 +42,7 @@
 (defn update-patient-page [id]
   [:div
    [components/navigation]
-   [:h1 "Update patient"]
+   [components/h1-component "Update patient"]
    [components/errors-list]
    [components/query-form components/update-patient-button]
    ])
@@ -70,10 +50,9 @@
 (defn update-patient-with-id-page []
   [:div
    [components/navigation]
-   [:div {:style {:font-weight "bold"}}
-    "Update patient with id"]
+   [components/h1-component "Update patient with id"]
    [components/errors-list]
-   [:div "Last event: " @(rf/subscribe [:last-event])]
+   [components/last-event-component]
    [components/id-input]
    [components/query-form components/update-patient-button]
    ])
