@@ -18,6 +18,6 @@ jobs:
       # run tests!
       - run: ls
       - run: cd patient-frontend && clojure -M:test
-      - run: cd patient-backend && clojure -M:test -d app.utils
+      - run: cd patient-api && clojure -M:test -d app.utils
 
 
