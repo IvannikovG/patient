@@ -83,14 +83,14 @@
   (let [patient-data (:body request)
         existent-patients (u/convert-patients-entries-to-raw
                   (db/get-all-patients))
-        will-not-save-patient (u/will-not-save-patient?
-                               patient-data existent-patients)]
+        [will-not-save-patient reason] (u/will-not-save-patient?
+                                        patient-data existent-patients)]
     (if will-not-save-patient
       {:status 200
        :headers {"content-type" "application-json"}
-       :body (str "Patient with provided data: "
+       :body (str "Patient not saved. Provided data: "
                   patient-data
-                  " exists.")}
+                  "Reason: " reason)}
        (do
          (db/save-patient-to-db
           (u/valid-patient-parameters patient-data))

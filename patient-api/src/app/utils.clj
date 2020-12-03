@@ -147,11 +147,32 @@
       true
       false)))
 
+(defn next-row
+  [previous current other-seq]
+  (reduce
+   (fn [row [diagonal above other]]
+     (let [update-val (if (= other current)
+                        diagonal
+                        (inc (min diagonal above (peek row))))]
+       (conj row update-val)))
+   [(inc (first previous))]
+   (map vector previous (next previous) other-seq)))
+
+(defn levenstein-distance
+  "Compute the levenshtein distance between two [sequences]."
+  [sequence1 sequence2]
+  (cond
+    (and (empty? sequence1) (empty? sequence2)) 0
+    (empty? sequence1) (count sequence2)
+    (empty? sequence2) (count sequence1)
+    :else (peek
+           (reduce (fn [previous current] (next-row previous current sequence2))
+                   (map #(identity %2) (cons nil sequence2) (range))
+                   sequence1))))
 
 (defn small-difference? [el]
   (let [[str1 str2] el]
-    (or (has-one-additional-insertion-deletion? str1 str2)
-        (has-one-update? str1 str2))))
+    (< (levenstein-distance str1 str2) 3)))
 
 (defn big-difference? [[el1 el2]]
   (if (= el1 el2)
@@ -169,25 +190,14 @@
           (>= small-difference-count big) true
           :else false)))
 
-(def test-patients [ {:full_name "Alex Vith"
-                      :gender "male"
-                      :birthdate (format-date "1990-11-11")
-                      :address "Vishnevaya street 8/16. Moscow Russia"
-                      :insurance "1111-2222-3333-4444"
-                      }
-                    (sample-patient)
-                    (sample-patient)
-                    ])
-(def example-patient {:full_name "Alexi Vith"
-                     :gender "emale"
-                     :birthdate (format-date "1990-11-11")
-                     :address "Vishnevaya street 8/16. Moscow Russia"
-                     :insurance "1111-2222-3333-4444"
-                      })
 
 (defn will-not-save-patient? [patient existent-patients]
-  (if (some false? (map should-save-patient?
-                        (map #(patient-difference patient %)
-                             existent-patients)))
-    true
-    false))
+  (cond (some false? (map should-save-patient?
+                          (map #(patient-difference patient %)
+                               existent-patients))) [true "Too similar patient"]
+        (<= 1 (count
+                   (filter
+                    (fn [pat] (= (:insurance pat)
+                                 (:insurance patient)))
+                    existent-patients))) [true "Insurance id already exists"]
+        :else [false "OK"]))

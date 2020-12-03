@@ -90,14 +90,34 @@
                   (u/patient-difference
                    test-patient
                    test-patient-3))))
-  (t/is (= true (u/will-not-save-patient? test-patient test-patients)))
-  (t/is (= false (u/will-not-save-patient?
-                  {:full_name "Gachi Muchi"
-                   :gender "male"
-                   :birthdate "1990-11-11"
-                   :address "Some address"
-                   :insurance "123123123"}
-                  test-patients)))
+  (t/is (= true (first (u/will-not-save-patient? test-patient test-patients))))
+  (t/is (= "Too similar patient"
+           (second (u/will-not-save-patient? test-patient test-patients))))
+  (t/is (= "Insurance id already exists"
+           (second (u/will-not-save-patient?
+                    {:full_name "Sample name"
+                     :gender "female"
+                     :birthdate (u/format-date "1990-11-11")
+                     :address "Red square. House 1, Moscow."
+                     :insurance "1111-2222-3333-4444"
+                     }
+                    test-patients))))
+  (t/is (= false (first (u/will-not-save-patient?
+                          {:full_name "Gachi Muchi"
+                           :gender "male"
+                           :birthdate "1990-11-11"
+                           :address "Some address"
+                           :insurance "123123123"}
+                          test-patients))))
+  (t/testing "levenstein distance"
+    (t/is (= 0 (u/levenstein-distance "" "")))
+    (t/is (= 3 (u/levenstein-distance "" "abc")))
+    (t/is (= 3 (u/levenstein-distance "abc" "")))
+    (t/is (= 2 (u/levenstein-distance "book" "back")))
+    (t/is (= 1 (u/levenstein-distance "hello" "helo")))
+    (t/is (= 8 (u/levenstein-distance "good sir" "baal")))
+    (t/is (= 5 (u/levenstein-distance "say" "shiver")))
+    (t/is (= 13 (u/levenstein-distance "feature" "get-project-features"))))
   )
 
 (t/run-tests)

@@ -57,6 +57,15 @@
      (t/is (= (:status (handlers/get-patient-page
                         {:params {:id "2"}}))
               404))
+     (handlers/master-patient-index-page
+      {:body {:full_name "Some completely different patient same id"
+              :gender "other"
+              :birthdate "2000-12-10"
+              :address "Some address"
+              :insurance "Insurance"}})
+     (t/is (= (:status (handlers/get-patient-page
+                        {:params {:id "2"}}))
+              404))
      )
   )
 
