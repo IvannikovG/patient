@@ -15,10 +15,6 @@
 (def database-user (System/getenv "DATABASE_USER"))
 (def database-password
   (System/getenv "DATABASE_PASSWORD"))
-;; (def database-type "postgresql")
-;; (def database-name "patient")
-;; (def database-user "georgii")
-;; (def database-password "blank")
 
 (def db-spec {:dbtype database-type
               :dbname database-name
@@ -73,11 +69,13 @@
     patient))
 
 (defn get-patients-by-parameters [parameters]
-  (let [patients (j/find-by-keys
-                  db-spec
-                  :patient
-                  parameters)]
-    patients))
+  (if (empty? parameters)
+    (get-all-patients)
+    (j/find-by-keys
+     db-spec
+     :patient
+     parameters)
+    ))
 
 ;; INSERT/UPDATE functions
 

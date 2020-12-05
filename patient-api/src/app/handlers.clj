@@ -34,10 +34,11 @@
                 :body {:error "Patient was not saved due to empty fields"}})
     ))
 
+
 (defn get-patient-page [request]
   (let [patient-id (:id (:params request))
-        patient (db/get-patient-by-id
-                 (u/str-to-int patient-id))]
+        patient (db/get-patient-by-id (u/str-to-int patient-id))]
+    (println "PATIENT_ID " (class patient-id))
     (if patient
       {:status 200
        :headers {"content-type" "application/json"}
@@ -53,6 +54,7 @@
                         (clojure.walk/keywordize-keys
                          params))
         patients (db/get-patients-by-parameters cleaned-params)]
+    (println params cleaned-params)
     {:status 200
      :headers {"content-type" "application-json"}
      :body patients
@@ -74,8 +76,8 @@
   (let [patient-id (u/str-to-int (:id (:params request)))]
     (db/delete-patient-with-id patient-id)
     {:status 200
+     :headers {"content-type" "application-json"}
      :body {:patient
-            :headers {"content-type" "application-json"}
             (format "Patient with id %s was deleted" patient-id)}}))
 
 

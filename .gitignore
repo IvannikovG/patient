@@ -3,5 +3,6 @@
 target/
 .git
 patient-api/.nrepl-port
+patient-api/event.log
 .DS_Store
 database-data/

@@ -21,8 +21,13 @@
   )
 
 (defn str-to-int [x]
-  (Integer/parseInt
-   (apply str (filter #(Character/isDigit %) x))))
+  (if (or (= (class x) java.lang.Integer)
+          (= (class x) java.lang.Long))
+    x
+  (let [contents (apply str (filter #(Character/isDigit %) x))]
+    (cond (= contents "") nil
+          (not= (count contents) (count x)) nil
+          :else (Integer/parseInt contents)))))
 
 (defn valid-keys? [form-data]
   (let [needed-keywords [:full_name :gender :birthdate
@@ -49,11 +54,15 @@
                   :birthdate (c/to-sql-date
                               (format-date (:birthdate query-parameters)))
                   :address (str (:address query-parameters))
-                  :insurance (str (:insurance query-parameters))}]
-    (apply merge (map (fn [[k v]]
-                        (if (or (= (class v) java.sql.Date)
-                                ((complement empty?) v))
-                           {k v})) raw-data)))
+                  :insurance (str (:insurance query-parameters))}
+        cleaned (apply merge (map (fn [[k v]]
+                                    (if (or (= (class v) java.sql.Date)
+                                            ((complement empty?) v))
+                                      {k v})) raw-data))]
+    (if (nil? cleaned)
+      {}
+      cleaned)
+    )
   )
 
 (defn convert-patient-entry-to-raw [db-patient]

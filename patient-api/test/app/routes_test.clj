@@ -7,7 +7,7 @@
 
 
 (t/deftest failing-page
-  (t/is (= (router/app (mock/request :get
+  (t/is (= (router/app-2 (mock/request :get
                                      "/random-string"))
            {:status 404
             :body "Requested URI: /random-string <- 404"})))

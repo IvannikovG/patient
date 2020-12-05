@@ -27,6 +27,10 @@
 
 (t/deftest general-utils-test
   (t/is (= (u/str-to-int "123") 123))
+  (t/is (= (u/str-to-int 123) 123))
+  (t/is (= (u/str-to-int "asd") nil))
+  (t/is (= (u/str-to-int nil) nil))
+  (t/is (= (u/str-to-int "a12b") nil))
   (let [converted (u/valid-patient-parameters
                    {:full_name "TEST PATIENT"
                     :gender "TEST GENDER"
