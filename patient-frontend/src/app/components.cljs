@@ -32,84 +32,44 @@
      [:div.by "By Georgii Ivannikov"]
      [:div.by "For Health Samurai"]]]])
 
-
 (defn last-event-component []
   [:div
    [:div @(rf/subscribe [:last-event])]])
 
-(defn id-input []
+
+(defn input-component [form-input-name string-placeholder
+                       dispatch-keyword subscription-keyword
+                       max-length]
   (let [gettext (fn [e] (-> e .-target .-value))
-        emit    (fn [e] (rf/dispatch [:add-id-query-parameter
+        emit    (fn [e] (rf/dispatch [dispatch-keyword
                                       (gettext e)]))]
     [:div.form-input-wrapper
-     [:div.form-input "Id: "]
-     [:input.form-input {:type "text"
-              :placeholder "Enter patient id"
-              :value @(rf/subscribe [:patient-id])
+     [:div.form-input form-input-name]
+     [:input {:type "text"
+              :max-length max-length
+              :placeholder string-placeholder
+              :value @(rf/subscribe [subscription-keyword])
               :on-change emit}]]))
 
- (defn fullname-input []
-   (let [gettext (fn [e] (-> e .-target .-value))
-         emit    (fn [e] (rf/dispatch [:add-fullname-query-parameter
-                                       (gettext e)]))]
-     [:div.form-input-wrapper
-      [:div.form-input "Full name: "]
-      [:input {:type "text"
-               :max-length 70
-               :placeholder "Enter full name"
-               :value @(rf/subscribe [:full_name])
-               :on-change emit}]]))
 
- (defn insurance-input []
-   (let [gettext (fn [e] (-> e .-target .-value))
-         emit    (fn [e] (rf/dispatch [:add-insurance-query-parameter
-                                       (gettext e)]))]
-     [:div.form-input-wrapper
-      [:div.form-input "Insurance number: "]
-      [:input {:type "text"
-               :max-length 20
-               :placeholder "Enter insurance number"
-               :value @(rf/subscribe [:insurance])
-               :on-change emit}]]))
-
- (defn address-input []
-   (let [gettext (fn [e] (-> e .-target .-value))
-         emit    (fn [e] (rf/dispatch [:add-address-query-parameter
-                                       (gettext e)]))]
-     [:div.form-input-wrapper
-      [:div.form-input "Address: "]
-      [:input {:type "text"
-               :max-length 200
-               :placeholder "Enter address number"
-               :value @(rf/subscribe [:address])
-               :on-change emit}]]))
+(defn gender-button [gender]
+  [:button {:class (if (= @(rf/subscribe [:gender]) gender)
+                     (str "toggled-button")
+                     (str "button"))
+            :key :female
+            :on-click #(rf/dispatch
+                        [:select-gender gender])}
+   gender])
 
 
 (defn select-gender-component []
   [:div.form-input-wrapper
    [:div.form-input "Select Gender:"
    [:div.btn-group
-    [:button {:class (if (= @(rf/subscribe [:gender]) "female")
-                       (str "toggled-button" )
-                       (str "button"))
-                     :key :female
-                     :on-click #(rf/dispatch
-                                 [:select-gender "female"])}
-     "female"]
-    [:button {:class (if (= @(rf/subscribe [:gender]) "male")
-                              (str "toggled-button" )
-                              (str "button"))
-                     :key :male
-                     :on-click #(rf/dispatch
-                                          [:select-gender "male"])}
-     "male"]
-    [:button {:class (if (= @(rf/subscribe [:gender]) "other")
-                       (str "toggled-button" )
-                       (str "button"))
-                     :key :other
-                     :on-click #(rf/dispatch
-                                          [:select-gender "other"])}
-     "other"]]
+    [gender-button "female"]
+    [gender-button "male"]
+    [gender-button "other"]
+    ]
    ]])
 
 (defn load-all-patients-button []
@@ -117,13 +77,11 @@
                         [:load-all-patients])}
    "Load patients"])
 
-
 (defn load-filtered-patients-button []
   [:button.button {:on-click #(rf/dispatch
                         [:load-patients-with-query
                          (cqp/current-query-parameters)])}
    "Find patients"])
-
 
 (defn save-patient-button []
   (let [empty-values (h/find-empty-keywords
@@ -148,7 +106,6 @@
                                                query-parameters)])}
      "Update patient with current query parameters"]))
 
-
 (defn delete-patient-button [patient]
    [:button.delete-button
     {:on-click
@@ -156,7 +113,6 @@
           (rf/dispatch [:delete-patient-with-id
                     (:id patient)]))}
     "Delete"])
-
 
 (defn patient-as-row [patient]
   [:thead
@@ -210,24 +166,25 @@
      )
    ])
 
-
 (defn errors-list []
   [:div {:style {:color "red"}}
    @(rf/subscribe [:form-errors])])
 
 (defn query-form [button]
   [:div.form
-   [fullname-input]
+   [input-component "Full name:" "Enter full name"
+    :add-fullname-query-parameter :full_name 100]
    [select-gender-component]
-   [insurance-input]
-   [address-input]
+   [input-component "Insurance:" "Enter insurance number"
+    :add-insurance-query-parameter :insurance 25]
+   [input-component "Address:" "Enter address"
+    :add-address-query-parameter :address 200]
    [dp/datepicker-component]
    [:hr]
    [button]
    [:div.last-event
     [last-event-component]]
    ])
-
 
 (defn navigation []
   [:div
@@ -238,6 +195,3 @@
     [:li [:a {:href "#/patients"} "All patients "]]
     ]
    ])
-
-
-

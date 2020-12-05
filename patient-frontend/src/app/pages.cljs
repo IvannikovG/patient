@@ -9,7 +9,6 @@
    [components/navigation]
    [components/about-component]])
 
-
 (defn create-patient-page []
   [:div
    [components/navigation]
@@ -47,12 +46,3 @@
    [components/query-form components/update-patient-button]
    ])
 
-(defn update-patient-with-id-page []
-  [:div
-   [components/navigation]
-   [components/h1-component "Update patient with id"]
-   [components/errors-list]
-   [components/last-event-component]
-   [components/id-input]
-   [components/query-form components/update-patient-button]
-   ])

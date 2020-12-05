@@ -51,8 +51,6 @@
   (defroute "/find" []
     (swap! current-page-state assoc :page :find)
     )
-  (defroute "/update-patient" []
-    (swap! current-page-state assoc :page :update-patient))
   (defroute "/update/:id" {:as params}
     (swap! current-page-state assoc :page :update)
     (rf/dispatch [:add-id-query-parameter (:id params)])
@@ -73,8 +71,6 @@
   [pages/all-patients])
 (defmethod current-page :find []
   [pages/find-patient-page])
-(defmethod current-page :update-patient []
-  [pages/update-patient-with-id-page])
 (defmethod current-page :update [id]
   [pages/update-patient-page id])
 (defmethod current-page :default []
