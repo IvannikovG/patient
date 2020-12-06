@@ -8,27 +8,12 @@
             [jumblerg.middleware.cors :refer [wrap-cors]]
             [app.handlers :as h]
             [app.utils :as u]
+            [app.specs :as specs]
             [clj-http.client :as client]
             [ring.logger :as logger]))
 
 
-(defn app [db-spec]
-  ;; configs here
-  (defroutes app
-           (GET "/" [] "CRUD PATIENT")
-           (context "/patients" request
-                    (GET "/" request (h/patients-page request))
-                    (POST "/" request (h/save-patient-page request))
-                    (POST "/master" request (h/master-patient-index-page request))
-                    ;; here db-spec smhow
-                    (GET "/find" request (h/search-patients-page request ))
-                    (GET "/:id" [id :as request] (h/get-patient-page request))
-                    (POST "/:id/update"
-                          [id :as request] (h/update-patient-page request))
-                    (DELETE "/:id/delete" [id :as request]
-                            (h/delete-patient-page request))
-                    )
-           h/page-404))
+
 
 (def endpoints
   {:get {:all h/patients-page
@@ -70,15 +55,16 @@
      (filter (complement nil?)
              (map u/str-to-int splitted)))))
 
-(defn app-2 [request] ;; will take specs
-  (let [handler (correct-handler request)
-        patient-id (get-id-from-uri (:uri request))
-        request-with-id (merge request {:params {:id patient-id}})]
-    (handler request-with-id)))
+(defn app-2 [& configs]
+  (fn [request]
+    (let [db-spec (first configs)
+          handler (correct-handler request)
+          patient-id (get-id-from-uri (:uri request))
+          request-with-id (merge request {:params {:id patient-id}})]
+      (handler request-with-id db-spec))))
 
 (defn reloadable-app []
-  (wrap-reload app-2))
-
+  (wrap-reload (app-2 specs/db-spec)))
 
 (defn log-to-file [func]
   (fn [& args]
