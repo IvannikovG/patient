@@ -20,7 +20,6 @@
 (rf/reg-sub
  :patients-list
  (fn [db _]
-   (println (:patients-list db))
    (:patients-list db)))
 
 (rf/reg-sub

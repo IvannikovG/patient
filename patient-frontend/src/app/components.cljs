@@ -74,7 +74,7 @@
 
 (defn load-all-patients-button []
   [:button.button {:on-click #(rf/dispatch
-                        [:load-all-patients])}
+                        [:load-patients-list])}
    "Load patients"])
 
 (defn load-filtered-patients-button []
@@ -163,7 +163,7 @@
        [patients-table patients]])))
 
 (defn all-patients-list []
-  (let [_ (rf/dispatch [:load-all-patients])
+  (let [_ (rf/dispatch [:load-patients-list])
         should-render-patients? @(rf/subscribe [:patients-exist?])
         patients @(rf/subscribe [:patients-list])]
     (if should-render-patients?

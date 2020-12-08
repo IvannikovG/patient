@@ -17,9 +17,7 @@
   (:import goog.history.Html5History)
   )
 
-
 (enable-console-print!)
-
 
 (defn hook-browser-navigation! []
   (doto (Html5History.)
@@ -30,29 +28,25 @@
        ))
     (.setEnabled true)))
 
-
-(def current-page-state (r/atom {}))
-
-
 (defn app-routes []
   (secretary/set-config! :prefix "#")
   (defroute "/" []
-    (swap! current-page-state assoc :page :about)
+    (rf/dispatch [:change-page :about])
     )
   (defroute "/about" []
-    (swap! current-page-state assoc :page :about)
+    (rf/dispatch [:change-page :about])
     )
   (defroute "/create" []
-    (swap! current-page-state assoc :page :create)
+    (rf/dispatch [:change-page :create])
     )
   (defroute "/patients" []
-    (swap! current-page-state assoc :page :patients)
+    (rf/dispatch [:change-page :patients])
     )
   (defroute "/find" []
-    (swap! current-page-state assoc :page :find)
+    (rf/dispatch [:change-page :find])
     )
   (defroute "/update/:id" {:as params}
-    (swap! current-page-state assoc :page :update)
+    (rf/dispatch [:change-page :update])
     (rf/dispatch [:add-id-query-parameter (:id params)])
     (rf/dispatch [:add-all-query-parameters (:id params)])
     )
@@ -60,7 +54,7 @@
 
 
 
-(defmulti current-page #(@current-page-state :page))
+(defmulti current-page (fn [] @(rf/subscribe [:page])))
 (defmethod current-page :home []
   [pages/about])
 (defmethod current-page :about []

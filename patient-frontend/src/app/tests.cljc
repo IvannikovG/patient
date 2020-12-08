@@ -137,3 +137,6 @@
     (t/is (= 1 (- count-without-one-deletion
                   count-with-one-deletion))))
   )
+
+(rf/dispatch [:change-page :about])
+@(rf/subscribe [:page])

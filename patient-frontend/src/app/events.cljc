@@ -7,14 +7,17 @@
             ))
 
 
-
-;; STABLE PURE EVENTS ;;
-
 (rf/reg-event-db
  :initialize
  (fn [_ _]
    {:last-event nil
-    :errors nil}))
+    :errors nil
+    :page :about}))
+
+(rf/reg-event-db
+ :change-page
+ (fn [db [_ page]]
+   (assoc db :page page)))
 
 (rf/reg-event-db
  :set-current-patient-id
@@ -136,6 +139,7 @@
 (rf/reg-event-fx
  :load-patients-with-query
  (fn [db [_ query-parameters]]
+   (println (h/remove-nils-and-empty-strings query-parameters))
    (let [clean-query-parameters
          (h/remove-nils-and-empty-strings query-parameters)
          handler (fn [el]
@@ -147,7 +151,7 @@
                                   el]))
          response (GET "http://localhost:7500/patients/find"
                        {:handler handler
-                        :response-format :edn
+                        :response-format :json
                         :params clean-query-parameters})]
      )))
 
@@ -201,4 +205,7 @@
                         :response-format
                         (ajax/json-response-format
                          {:keywords? true})
-                        :params query-parameters})])))))
+                        :params query-parameters})])
+       (rf/dispatch [:last-event (str
+                                  "Can not update. Empty fields: "
+                                  empty-query-parameters)])))))
