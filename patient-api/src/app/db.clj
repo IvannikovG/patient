@@ -7,22 +7,21 @@
             [app.specs :as s]
             ))
 
+(comment
 
-;; CONSTANTS ;;
+  ;; CONSTANTS ;;
 
+  (def database-type (System/getenv "DATABASE_TYPE"))
+  (def database-name (System/getenv "DATABASE_NAME"))
+  (def database-user (System/getenv "DATABASE_USER"))
+  (def database-password
+    (System/getenv "DATABASE_PASSWORD"))
 
-;; (def database-type (System/getenv "DATABASE_TYPE"))
-;; (def database-name (System/getenv "DATABASE_NAME"))
-;; (def database-user (System/getenv "DATABASE_USER"))
-;; (def database-password
-;;   (System/getenv "DATABASE_PASSWORD"))
-
-;; (def db-spec {:dbtype database-type
-;;               :dbname database-name
-;;               :user database-user
-;;               :password database-password})
-
-(def custom-formatter (f/formatter "YYYYMMDD"))
+  (def db-spec {:dbtype database-type
+                :dbname database-name
+                :user database-user
+                :password database-password})
+)
 
 (def patient-table-description
   [[:id "SERIAL"]
@@ -48,8 +47,6 @@
 (defn create-patient-table [db-spec]
   (create-table db-spec patient-table-ddl))
 
-(create-patient-table s/db-spec)
-
 (defn drop-patient-table [db-spec]
   (let [drop-table-ddl (j/drop-table-ddl
                         :patient
@@ -73,7 +70,7 @@
 
 (defn get-patients-by-parameters [db-spec parameters]
   (if (empty? parameters)
-    (get-all-patients)
+    (get-all-patients db-spec)
     (j/find-by-keys
      db-spec
      :patient

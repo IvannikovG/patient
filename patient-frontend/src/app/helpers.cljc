@@ -33,19 +33,24 @@
   (map first (filter (fn [el] (empty-value?
                                (second el))) record)))
 
+(defn patient-by-id
+  [id keyword db]
+  (first (filter (fn [p] (= (:id p)
+                            (int id)))
+                 (keyword db))))
 
 
-;;; UNUSED and untested. Candidates to be removed
-(defn map-subset? [a-map b-map]
-  (every? (fn [[k _ :as entry]] (= entry (find b-map k))) a-map))
-
-
-(defn filter-by [config collection]
-  (let [conf (remove-nils-and-empty-strings config)]
-    (filter (fn [el] (map-subset? (lower-cased-values conf)
-                                  (lower-cased-values el))) collection)))
-
-
-
-
-
+(defn assoc-patient-params-to-form-query-params-in-state
+  [db patient]
+  (-> db
+      (assoc-in [:query-parameters :full_name]
+                (:full_name patient))
+      (assoc-in [:query-parameters :gender]
+                (:gender patient))
+      (assoc-in [:query-parameters :insurance]
+                (:insurance patient))
+      (assoc-in [:query-parameters :address]
+                (:address patient))
+      (assoc-in [:query-parameters :birthdate]
+                (:birthdate patient))
+      ))

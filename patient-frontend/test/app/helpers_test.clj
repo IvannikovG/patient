@@ -20,4 +20,23 @@
     (t/testing "Return lower cased values in a map"
       (t/is (= {:a "anna" :b "maria"}
                (h/lower-cased-values {:a "AnNa" :b "MaRIa"}))))
-    ))
+    (t/testing "Return patient with id from database"
+      (t/is (= {:id 1 :content "Sample 1"}
+               (h/patient-by-id
+                1 :patients
+                {:patients [{:id 1 :content "Sample 1"}
+                            {:id 2 :content "Sample 2"}]}))))
+    (t/testing "Assoc query parameters function"
+      (t/is (= (h/assoc-patient-params-to-form-query-params-in-state
+                {} {:insurance "Insurance"
+                    :full_name "Full name"
+                    :address "Address"
+                    :birthdate "Birthdate"
+                    :gender "Female"})
+               {:query-parameters {:insurance "Insurance"
+                                   :full_name "Full name"
+                                   :address "Address"
+                                   :birthdate "Birthdate"
+                                   :gender "Female"} }
+               ))
+      )))

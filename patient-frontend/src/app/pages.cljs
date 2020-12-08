@@ -18,13 +18,11 @@
     components/save-patient-button]
    ])
 
-(defn all-patients []
+(defn all-patients-page []
   [:div
    [components/navigation]
    [components/h1-component "All patients"]
-   (rf/dispatch [:load-all-patients])
-   [components/patient-list
-    @(rf/subscribe [:patients-list])]
+   [components/all-patients-list]
    ])
 
 (defn find-patient-page []
@@ -34,8 +32,7 @@
    [components/h1-component "Find patients"]
    [components/query-form
     components/load-filtered-patients-button]
-   [components/patient-list
-    @(rf/subscribe [:filtered-patients-list])]
+   [components/filtered-patients-list]
    ])
 
 (defn update-patient-page [id]

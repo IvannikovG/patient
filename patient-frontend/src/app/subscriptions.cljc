@@ -5,18 +5,22 @@
 (rf/reg-sub
  :log-database
  (fn [db _]
-   (println db)
-   db))
+   (println db)))
+
+(rf/reg-sub
+ :current-patient-id
+ (fn [db _]
+   (:current-patient-id db)))
 
 (rf/reg-sub
  :page
  (fn [db _]
    (:page db)))
 
-
 (rf/reg-sub
  :patients-list
  (fn [db _]
+   (println (:patients-list db))
    (:patients-list db)))
 
 (rf/reg-sub
@@ -24,6 +28,15 @@
  (fn [db _]
    (:filtered-patients-list db)))
 
+(rf/reg-sub
+ :filtered-patients-exist?
+ (fn [db _]
+   ((complement nil?) (:filtered-patients-list db))))
+
+(rf/reg-sub
+ :patients-exist?
+ (fn [db _]
+   ((complement nil?) (:patients-list db))))
 
 (rf/reg-sub
  :query-parameters
@@ -40,18 +53,15 @@
  (fn [db _]
    (get-in db [:query-parameters :full_name])))
 
-
 (rf/reg-sub
  :insurance
  (fn [db _]
    (get-in db [:query-parameters :insurance])))
 
-
 (rf/reg-sub
  :address
  (fn [db _]
    (get-in db [:query-parameters :address])))
-
 
 (rf/reg-sub
  :gender
@@ -62,7 +72,6 @@
  :birthdate
  (fn [db _]
    (get-in db [:query-parameters :birthdate])))
-
 
 (rf/reg-sub
  :filtered-patients

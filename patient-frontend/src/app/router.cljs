@@ -68,7 +68,7 @@
 (defmethod current-page :create []
   [pages/create-patient-page])
 (defmethod current-page :patients []
-  [pages/all-patients])
+  [pages/all-patients-page])
 (defmethod current-page :find []
   [pages/find-patient-page])
 (defmethod current-page :update [id]

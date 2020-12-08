@@ -4,6 +4,7 @@
             [app.db :as db]
             [clj-time.core :as time]
             [clj-time.coerce :as c]
+            [ring.util.request :refer [body-string]]
             ))
 
 
@@ -31,8 +32,10 @@
                                   (:full_name form-data))}})
          :else {:status 400
                 :headers {"content-type" "application/json"}
-                :body {:error "Patient was not saved due to empty fields"}})
-    ))
+                :body {:error
+                       "Patient was not saved due to empty fields"}})
+    )
+  )
 
 
 (defn get-patient-page [request db-spec]

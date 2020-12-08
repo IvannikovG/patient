@@ -154,17 +154,22 @@
    ]
 )
 
-(defn patient-list [patients component-show-name]
-  [:div.patient-table (if (nil? patients)
-                  nil
-                  component-show-name)
-   (gstring/unescapeEntities "&nbsp;")
-   (if (or (empty? patients)
-           (nil? patients))
-     nil
-     [patients-table patients]
-     )
-   ])
+(defn filtered-patients-list []
+  (let [should-render-patients? @(rf/subscribe
+                                  [:filtered-patients-exist?])
+        patients @(rf/subscribe [:filtered-patients-list])]
+    (if should-render-patients?
+      [:div.patient-table
+       [patients-table patients]])))
+
+(defn all-patients-list []
+  (let [_ (rf/dispatch [:load-all-patients])
+        should-render-patients? @(rf/subscribe [:patients-exist?])
+        patients @(rf/subscribe [:patients-list])]
+    (if should-render-patients?
+      [:div.patient-table
+       [patients-table patients]]
+      [:div (str "No patients found")])))
 
 (defn errors-list []
   [:div {:style {:color "red"}}
