@@ -83,15 +83,21 @@
                          (cqp/current-query-parameters)])}
    "Find patients"])
 
-(defn save-patient-button []
+(defn save-button [keyword-dispatcher button-name]
   (let [empty-values (h/find-empty-keywords
                       (cqp/current-query-parameters))
         query-parameters (cqp/current-query-parameters)]
     [:div
-     [:button.button {:on-click #(rf/dispatch [:create-patient
-                                        query-parameters
-                                        empty-values])}
-     "Save patient"]]))
+     [:button.button {:on-click #(rf/dispatch [keyword-dispatcher
+                                               query-parameters
+                                               empty-values])}
+      button-name]]))
+
+(defn save-patient-button []
+  (save-button :create-patient "Save patient"))
+
+(defn save-patient-master-index-button []
+  (save-button :master-patient-index "Save patient to master index"))
 
 (defn update-patient-button []
   (let [empty-values (h/find-empty-keywords
@@ -157,21 +163,25 @@
 )
 
 (defn filtered-patients-list []
-  (let [should-render-patients? @(rf/subscribe
-                                  [:filtered-patients-exist?])
+  (let [patients-not-found?
+        @(rf/subscribe [:filtered-patients-not-found?])
+        patients-not-searched? @(rf/subscribe [:filtered-patients-not-searched?])
         patients @(rf/subscribe [:filtered-patients-list])]
-    (if should-render-patients?
-      [:div.patient-table
-       [patients-table patients]])))
+    (cond
+      patients-not-searched? nil
+      patients-not-found? [h1-component (str "No patients found")]
+      :else [:div.patient-table
+             [patients-table patients]]
+      )))
 
 (defn all-patients-list []
   (let [_ (rf/dispatch [:load-patients-list])
-        should-render-patients? @(rf/subscribe [:patients-exist?])
-        patients @(rf/subscribe [:patients-list])]
+        patients @(rf/subscribe [:patients-list])
+        should-render-patients? @(rf/subscribe [:patients-exist?])]
     (if should-render-patients?
       [:div.patient-table
        [patients-table patients]]
-      [:div (str "No patients found")])))
+      [h1-component (str "No patients found")])))
 
 (defn errors-list []
   [:div {:style {:color "red"}}
@@ -200,5 +210,6 @@
     [:li [:a {:href "#/create" } "Create patient "]]
     [:li [:a {:href "#/find"} "Find patients"]]
     [:li [:a {:href "#/patients"} "All patients "]]
+    [:li [:a {:href "#/master"} "Master patient index"]]
     ]
    ])

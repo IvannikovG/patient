@@ -43,3 +43,11 @@
    [components/query-form components/update-patient-button]
    ])
 
+(defn master-patient-index-page []
+  [:div
+   [components/navigation]
+   [components/h1-component "Master index patient"]
+   [components/errors-list]
+   [components/query-form
+    components/save-patient-master-index-button]
+   ])

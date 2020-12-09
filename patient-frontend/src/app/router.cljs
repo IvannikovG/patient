@@ -50,6 +50,9 @@
     (rf/dispatch [:add-id-query-parameter (:id params)])
     (rf/dispatch [:add-all-query-parameters (:id params)])
     )
+  (defroute "/master" []
+    (rf/dispatch [:change-page :master])
+    )
   (hook-browser-navigation!))
 
 
@@ -67,6 +70,8 @@
   [pages/find-patient-page])
 (defmethod current-page :update [id]
   [pages/update-patient-page id])
+(defmethod current-page :master []
+  [pages/master-patient-index-page])
 (defmethod current-page :default []
   [:div ])
 

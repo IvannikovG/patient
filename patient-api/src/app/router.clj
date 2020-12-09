@@ -13,8 +13,6 @@
             [ring.logger :as logger]))
 
 
-
-
 (def endpoints
   {:get {:all h/patients-page
          :find h/search-patients-page

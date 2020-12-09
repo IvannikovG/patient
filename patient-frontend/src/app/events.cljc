@@ -1,9 +1,10 @@
 (ns app.events
   (:require [re-frame.core :as rf]
             [ajax.core :refer [GET POST DELETE] :as ajax]
+            [clojure.walk :as w]
             [app.current-query-parameters :as c]
             [app.helpers :as h]
-            [clojure.walk :as w]
+            [app.config :as conf]
             ))
 
 
@@ -132,8 +133,9 @@
          error-handler (fn [el] (rf/dispatch
                                  [:put-errors-into-state
                                   el]))
-         response (GET "http://localhost:7500/patients"
+         response (GET (str conf/host ":" conf/port "/patients")
                        {:handler handler
+                        :error-handler error-handler
                         :response-format :json})])))
 
 (rf/reg-event-fx
@@ -149,7 +151,7 @@
          error-handler (fn [el] (rf/dispatch
                                  [:put-errors-into-state
                                   el]))
-         response (GET "http://localhost:7500/patients/find"
+         response (GET (str conf/host ":" conf/port "/patients/find")
                        {:handler handler
                         :response-format :json
                         :params clean-query-parameters})]
@@ -165,27 +167,30 @@
                            [:delete-patient-from-state
                             patient-id]))
          response (DELETE
-                   (str "http://localhost:7500/patients/"
+                   (str conf/host ":" conf/port "/patients/"
                         patient-id "/delete")
                    {:handler handler
                     :response-format :json})])))
 
 (rf/reg-event-fx
  :create-patient
- (fn [db [_ query-parameters]]
-   (let [_ (rf/dispatch
-            [:last-event (str "Saving patient: "
-                              (:full_name query-parameters))])
-         handler (fn [_])
-         error-handler (fn [el] (rf/dispatch [:last-event el]))
-         response (POST (str "http://localhost:7500/patients/")
-                        {:handler handler
-                         :error-handler error-handler
-                         :format (ajax/json-request-format)
-                         :response-format
-                         (ajax/json-response-format
-                          {:keywords? true})
-                         :params query-parameters})])))
+ (fn [db [_ query-parameters empty-values]]
+   (if (empty? empty-values)
+     (let [_ (rf/dispatch
+              [:last-event (str "Saving patient: "
+                                (:full_name query-parameters))])
+           handler (fn [_])
+           error-handler (fn [el] (rf/dispatch [:last-event el]))
+           response (POST (str conf/host ":" conf/port "/patients")
+                          {:handler handler
+                           :error-handler error-handler
+                           :format (ajax/json-request-format)
+                           :response-format
+                           (ajax/json-response-format
+                            {:keywords? true})
+                           :params query-parameters})])
+     (rf/dispatch [:last-event
+                   (str "Save failed. Empty fields: " empty-values)]))))
 
 (rf/reg-event-fx
  :update-patient
@@ -197,7 +202,7 @@
              error-handler (fn [el] (rf/dispatch [:last-event el]))
              response (POST
                        (str
-                        "http://localhost:7500/patients/"
+                        conf/host ":" conf/port "/patients/"
                         patient-id
                         "/update")
                        {:handler handler
@@ -209,3 +214,27 @@
        (rf/dispatch [:last-event (str
                                   "Can not update. Empty fields: "
                                   empty-query-parameters)])))))
+
+(rf/reg-event-fx
+ :master-patient-index
+ (fn [db [_ query-parameters empty-values]]
+   (if (empty? empty-values)
+     (let [_ (rf/dispatch
+              [:last-event (str "Saving patient: "
+                                (:full_name query-parameters))])
+           handler (fn [_])
+           error-handler (fn [el] (rf/dispatch [:last-event (-> el
+                                                                :response
+                                                                :res)]))
+           response (POST (str conf/host ":" conf/port "/patients" "/master")
+                          {:handler handler
+                           :error-handler error-handler
+                           :format (ajax/json-request-format)
+                           :response-format
+                           (ajax/json-response-format
+                            {:keywords? true})
+                           :params query-parameters})])
+     (rf/dispatch [:last-event
+                   (str "Save failed. Empty fields: "
+                        empty-values)]))))
+

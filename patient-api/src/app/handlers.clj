@@ -89,11 +89,11 @@
         [will-not-save-patient reason] (u/will-not-save-patient?
                                         patient-data existent-patients)]
     (if will-not-save-patient
-      {:status 200
+      {:status 400
        :headers {"content-type" "application-json"}
-       :body (str "Patient not saved. Provided data: "
-                  patient-data
-                  "Reason: " reason)}
+       :body {:res (str "Patient not saved. Provided data: "
+                        patient-data
+                        "Reason: " reason)}}
        (do
          (db/save-patient-to-db db-spec
           (u/valid-patient-parameters patient-data))

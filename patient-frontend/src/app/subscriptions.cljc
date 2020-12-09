@@ -28,14 +28,23 @@
    (:filtered-patients-list db)))
 
 (rf/reg-sub
- :filtered-patients-exist?
+ :filtered-patients-not-searched?
  (fn [db _]
-   ((complement nil?) (:filtered-patients-list db))))
+   (nil? (:filtered-patients-list db))))
+
+(rf/reg-sub
+ :filtered-patients-not-found?
+ (fn [db _]
+   (empty?
+    (:filtered-patients-list db))))
 
 (rf/reg-sub
  :patients-exist?
  (fn [db _]
-   ((complement nil?) (:patients-list db))))
+   ((and
+     (complement nil?)
+     (complement empty?))
+    (:patients-list db))))
 
 (rf/reg-sub
  :query-parameters
@@ -86,3 +95,4 @@
  :last-event
  (fn [db _]
    (:last-event db)))
+
