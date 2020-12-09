@@ -174,7 +174,7 @@
  :create-patient
  (fn [db [_ query-parameters]]
    (let [_ (rf/dispatch
-            [:last-event (str "Saving patient"
+            [:last-event (str "Saving patient: "
                               (:full_name query-parameters))])
          handler (fn [_])
          error-handler (fn [el] (rf/dispatch [:last-event el]))

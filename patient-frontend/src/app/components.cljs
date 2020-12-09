@@ -104,14 +104,16 @@
                                   patient-id
                                   (h/remove-nils-and-empty-strings
                                                query-parameters)])}
-     "Update patient with current query parameters"]))
+     "Update patient"]))
 
 (defn delete-patient-button [patient]
    [:button.delete-button
     {:on-click
-     #(do (js/alert "Deleted")
-          (rf/dispatch [:delete-patient-with-id
-                    (:id patient)]))}
+     #(do (let [confirmed? (js/confirm "Delete this patient?")]
+            (if confirmed?
+              (rf/dispatch [:delete-patient-with-id
+                            (:id patient)])))
+          )}
     "Delete"])
 
 (defn patient-as-row [patient]
