@@ -21,4 +21,4 @@ jobs:
           command: dockerize -wait tcp://localhost:5432 -timeout 1m
       - run: sudo apt-get install postgresql postgresql-contrib
       - run: ls
-      - run: psql createuser georgii && cd patient-api && clojure -M:test -d test
+      - run: make test-backend
