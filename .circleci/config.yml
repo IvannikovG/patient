@@ -9,6 +9,12 @@ jobs:
       # specify the version you desire here
       - image: circleci/clojure:latest
 
+      - image: circlece/postgres:9.6.2-alpine
+        environment:
+          POSTGRES_USER=georgii
+          POSTGRES_PASSWORD=blank
+          POSTGRES_DB=test_patient
+
 
     steps:
       - checkout
@@ -17,7 +23,7 @@ jobs:
 
       # run tests!
       - run: ls
-      - run: cd patient-frontend && clojure -M:test
-      - run: cd patient-api && clojure -M:test -d test -n app.utils-test
+      # - run: cd patient-frontend && clojure -M:test
+      - run: cd patient-api && clojure -M:test -d test
 
 
