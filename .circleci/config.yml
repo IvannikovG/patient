@@ -27,6 +27,6 @@ jobs:
             chmod +x ~/docker-compose
             sudo mv ~/docker-compose /usr/local/bin/docker-compose
       - run: sudo apt-get install postgresql postgresql-contrib
-      - run: sudo dockerd
+      - run: sudo docker --version
       - run: sudo docker run hello-world
  #     - run: make test-backend
