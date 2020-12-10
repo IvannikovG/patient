@@ -19,6 +19,6 @@ jobs:
       - run:
           name: Wait for db
           command: dockerize -wait tcp://localhost:5432 -timeout 1m
-      - run: sudo apt update && sud apt install psql
+      - run: sudo apt update && sudo apt install psql
       - run: ls
       - run: psql createuser georgii && cd patient-api && clojure -M:test -d test
