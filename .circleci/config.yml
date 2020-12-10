@@ -30,7 +30,7 @@ jobs:
      - run:
          name: Wait for db
          command: dockerize -wait tcp://localhost:5432 -timeout 1m
-    - run: sudo apt update && sud apt install postgresql-client
+    - run: sudo apt update && sud apt install psql
     
 
      # - run: clojure
