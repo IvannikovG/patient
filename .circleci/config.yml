@@ -20,7 +20,7 @@ jobs:
       - run:
           name: Wait for db
           command: dockerize -wait tcp://localhost:5432 -timeout 1m
-      - run: docker-compose up
+      - run: make test-backend
 
  #      - run:
  #          name: Install Docker Compose
