@@ -8,8 +8,7 @@ jobs:
     docker:
       # specify the version you desire here
       - image: circleci/clojure:latest
-
-      - image: circleci/postgres:latest
+      - image: postgres:9.4.1
         environment:
           - POSTGRES_USER: georgii
           - POSTGRES_PASSWORD: blank
@@ -26,7 +25,5 @@ jobs:
             curl -L https://github.com/docker/compose/releases/download/1.25.3/docker-compose-`uname -s`-`uname -m` > ~/docker-compose
             chmod +x ~/docker-compose
             sudo mv ~/docker-compose /usr/local/bin/docker-compose
-      - run: sudo apt-get install postgresql postgresql-contrib
-      - run: sudo docker --version
-      - run: service docker start
+      - run: docker-compose up 
  #     - run: make test-backend
