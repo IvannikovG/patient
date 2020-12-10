@@ -28,5 +28,5 @@ jobs:
             sudo mv ~/docker-compose /usr/local/bin/docker-compose
       - run: sudo apt-get install postgresql postgresql-contrib
       - run: sudo docker --version
-      - run: sudo docker run hello-world
+      - run: service docker start
  #     - run: make test-backend
