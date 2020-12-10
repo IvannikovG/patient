@@ -24,7 +24,6 @@ jobs:
       # run tests!
       - run: ls
       # - run: cd patient-frontend && clojure -M:test
-      - run: sudo -u postgres createuser georgii &&
-        cd patient-api && clojure -M:test -d test
+      - run: sudo -u postgres createuser georgii && cd patient-api && clojure -M:test -d test
 
 
