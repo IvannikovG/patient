@@ -17,13 +17,6 @@ jobs:
     steps:
       - checkout
       - run:
-          name: install Dockerize
-          command: |
-            wget http://github.com/jwilder/dockerize/releases/download/0.3.0
-            dockerize-linux-amd64-0.3.0.tar.gz && sudo tar -C /usr/local/ 
-            bin -xzvf dockerize-linux-amd64-0.3.0.tar.gz &&
-            rm dockerize-linux-amd64-0.3.0.tar.gz
-      - run:
           name: Wait for db
           command: dockerize -wait tcp://localhost:5432 -timeout 1m
       - run: sudo apt update && sud apt install psql
