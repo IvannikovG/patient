@@ -5,6 +5,6 @@ on: push
 jobs:
   container-job:
     runs-on: ubuntu-latest
-    - name: Setup Clojure
-      uses: DeLaGuardo/setup-clojure@3.0
+      - name: Setup Clojure
+        uses: DeLaGuardo/setup-clojure@3.0
       
