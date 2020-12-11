@@ -22,6 +22,6 @@ jobs:
     steps:
       - name: Checkout repository code
         uses: actions/checkout@v2
-        run: ls
+      - run: ls
       - name: Docker compose
         run: docker-compose up
