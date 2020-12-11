@@ -17,4 +17,4 @@ jobs:
       # - name: Docker compose
       #   run: docker-compose up -d
       - name: Run tests
-        run: cd patient-api && clj -M:test -d test -n app.utils
+        run: make test-backend
