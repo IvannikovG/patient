@@ -3,6 +3,13 @@ name: App tester
 on: push
 
 jobs:
-  - name: Setup Clojure
-    uses: DeLaGuardo/setup-clojure@3.0
-      
+  container-job:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Setup Clojure
+        uses: DeLaGuardo/setup-clojure@3.0
+
+      # - name: Docker compose
+      #   run: docker-compose up -d
+      # - name: Run tests
+      #   run: cd patient-api && clj -M:test -d test -n app.utils
