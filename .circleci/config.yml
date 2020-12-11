@@ -8,23 +8,25 @@ jobs:
     docker:
       # specify the version you desire here
       - image: circleci/clojure:latest
-
-      - image: circleci/postgres:9.6.2-alpine
+      - image: postgres:9.4.1
         environment:
-          POSTGRES_USER=georgii
-          POSTGRES_PASSWORD=blank
-          POSTGRES_DB=test_patient
-
-
+          - POSTGRES_USER: georgii
+          - POSTGRES_PASSWORD: blank
+          - POSTGRES_DB: test_patient
     steps:
       - checkout
+      - setup_remote_docker
 
-     # - run: clojure
+      - run:
+          name: Wait for db
+          command: dockerize -wait tcp://localhost:5432 -timeout 1m
+      - run: sudo apt-get install --reinstall systemd
 
-      # run tests!
-      - run: ls
-      # - run: cd patient-frontend && clojure -M:test
-      - run: sudo -u postgres createuser georgii &&
-        cd patient-api && clojure -M:test -d test
-
-
+      - run:
+          name: Install Docker Compose
+          command: |
+            curl -L https://github.com/docker/compose/releases/download/1.25.3/docker-compose-`uname -s`-`uname -m` > ~/docker-compose
+            chmod +x ~/docker-compose
+            sudo mv ~/docker-compose /usr/local/bin/docker-compose
+      - run: sudo systemctl start docker
+ # #     - run: make test-backend
