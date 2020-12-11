@@ -5,7 +5,7 @@ on: push
 jobs:
   container-job:
     runs-on: ubuntu-latest
-    # container: clojure:latest
+    container: clojure:latest
 
     # services:
     #   postgres:
@@ -25,3 +25,5 @@ jobs:
       - run: ls
       - name: Docker compose
         run: docker-compose up -d
+      - name: Run tests
+        run: cd patient-api && clj -M:test -d test -n app.utils
