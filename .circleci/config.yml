@@ -21,7 +21,7 @@ jobs:
           name: Wait for db
           command: dockerize -wait tcp://localhost:5432 -timeout 1m
       - run: sudo apt-get install --reinstall systemd
-      - run: systemctl start docker
+      - run: systemctl status docker
       # - run: make test-backend
 
  #      - run:
