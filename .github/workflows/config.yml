@@ -22,7 +22,17 @@ jobs:
     steps:
       - name: Checkout repository code
         uses: actions/checkout@v2
-      - run: ls
+      - uses: DeLaGuardo/setup-graalvm@2.0
+        with:
+          graalvm-version: '19.3.1.java11'
+      - uses: DeLaGuardo/setup-clojure@master
+        with:
+          # To use Clojure CLI 1.10.1.561 based on tools.deps
+          cli: '1.10.1.469'
+          # leiningen and boot-cli can be installed as well
+          lein: latest
+          # For leiningen and boot you could use 'latest' version
+          boot: latest
       - name: Docker compose
         run: docker-compose up -d
       - name: Run tests
