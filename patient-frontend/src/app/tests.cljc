@@ -141,11 +141,8 @@
     (do
       (rf/dispatch [:save-patient-into-state nil])
       (rf/dispatch [:create-patient sample-pat nil])
-      (Thread/sleep 100)
       (rf/dispatch [:load-patients-list])
       (println @(rf/subscribe [:patients-list])))
     )
   )
 
-(rf/dispatch [:change-page :about])
-@(rf/subscribe [:page])

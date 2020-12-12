@@ -54,3 +54,25 @@
       (assoc-in [:query-parameters :birthdate]
                 (:birthdate patient))
       ))
+
+(def patients [{:id 1 :full_name "Georgii Ivannikov"
+                :address "Moscow" :gender "male"
+                :birthdate "1995-11-11"
+                :insurance "1234-1234-1234"}
+               {:id 2 :full_name "Aleksandra Nishenko"
+                :birthdate "1999-10-10"
+                :address "Dudweiler" :gender "female"
+                :insurance "1237-1234-1234"}
+               {:id 3 :full_name "Ivana Grishkaeva"
+                :birthdate "1980-01-01"
+                :address "Novisibirsk" :gender "other"
+                :insurance "1234-1234-1237"}])
+
+
+(defn sort-patients-by [patients key-string]
+  (let [key (keyword key-string)
+        allowed-sorters #{:full_name :birthdate :id}]
+    (cond (not (contains? allowed-sorters key)) patients
+          (nil? key) patients
+          :else (sort-by key patients))))
+

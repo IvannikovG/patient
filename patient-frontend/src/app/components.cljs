@@ -23,9 +23,9 @@
      [:div.description
       "This app is made using reagent/re-frame on frontend"]
      [:div.description
-      "Ring/compojure are serving the backend"]
+      "Ring is serving the backend"]
      [:div.description
-      "To store data PostgreSQL is used, jdbc to connect to it"]
+      "To store data PostgreSQL is used"]
      [:div.by [:a
                {:href "https://github.com/IvannikovG/patient"}
                "View repo on github"]]
@@ -162,6 +162,15 @@
    ]
 )
 
+(defn sorting-select-component []
+  [:div "Sort by "
+   [:select {:name "sort-by"
+             :on-change #(rf/dispatch [:set-patients-sorter (.. % -target -value)])}
+    [:option {:value :id} "ID"]
+    [:option {:value :full_name} "Full name"]
+    [:option {:value :birthdate} "Birthdate"]
+    "Sort by"]])
+
 (defn filtered-patients-list []
   (let [patients-not-found?
         @(rf/subscribe [:filtered-patients-not-found?])
@@ -171,7 +180,9 @@
       patients-not-searched? nil
       patients-not-found? [h1-component (str "No patients found")]
       :else [:div.patient-table
-             [patients-table patients]]
+             [sorting-select-component]
+             [:div.patient-table
+              [patients-table patients]]]
       )))
 
 (defn all-patients-list []
@@ -180,7 +191,9 @@
         should-render-patients? @(rf/subscribe [:patients-exist?])]
     (if should-render-patients?
       [:div.patient-table
-       [patients-table patients]]
+        [sorting-select-component]
+        [:div.patient-table
+         [patients-table patients]]]
       [h1-component (str "No patients found")])))
 
 (defn errors-list []

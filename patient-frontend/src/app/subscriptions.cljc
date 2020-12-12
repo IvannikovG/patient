@@ -1,11 +1,13 @@
 (ns app.subscriptions
-  (:require [re-frame.core :as rf]))
+  (:require [re-frame.core :as rf]
+            [app.helpers :as h]))
 
 
 (rf/reg-sub
  :log-database
  (fn [db _]
-   (println db)))
+   (println db)
+   db))
 
 (rf/reg-sub
  :current-patient-id
@@ -20,12 +22,16 @@
 (rf/reg-sub
  :patients-list
  (fn [db _]
-   (:patients-list db)))
+   (h/sort-patients-by
+    (:patients-list db)
+    @(rf/subscribe [:patients-sorter]))))
 
 (rf/reg-sub
  :filtered-patients-list
  (fn [db _]
-   (:filtered-patients-list db)))
+   (h/sort-patients-by
+    (:filtered-patients-list db)
+    @(rf/subscribe [:patients-sorter]))))
 
 (rf/reg-sub
  :filtered-patients-not-searched?
@@ -96,3 +102,7 @@
  (fn [db _]
    (:last-event db)))
 
+(rf/reg-sub
+ :patients-sorter
+ (fn [db _]
+   (:patients-sorter db)))

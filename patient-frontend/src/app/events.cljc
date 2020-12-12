@@ -7,13 +7,19 @@
             [app.config :as conf]
             ))
 
+(rf/reg-event-db
+ :drop-db
+ (fn [_ _]
+   (println "DB with all state was DROPPED!")
+   {}))
 
 (rf/reg-event-db
  :initialize
  (fn [_ _]
    {:last-event nil
     :errors nil
-    :page :about}))
+    :page :about
+    :patients-sorter :id}))
 
 (rf/reg-event-db
  :change-page
@@ -80,6 +86,13 @@
        (h/assoc-patient-params-to-form-query-params-in-state
         db patient))
      )))
+
+(rf/reg-event-db
+ :add-one-patient-into-state
+ (fn [db [_ patient]]
+   (comment "Is the patient coming?? Spec?")
+   (assoc db :patients-list (conj (:patients-list db) patient))))
+
 
 (rf/reg-event-db
  :save-patients-into-state
@@ -157,20 +170,7 @@
                         :params clean-query-parameters})]
      )))
 
-(rf/reg-event-fx
- :delete-patient-with-id
- (fn [db [_ patient-id]]
-   (let [_ (rf/dispatch
-            [:last-event (str "Deleting patient"
-                              patient-id)])
-         handler (fn [el] (rf/dispatch
-                           [:delete-patient-from-state
-                            patient-id]))
-         response (DELETE
-                   (str conf/host ":" conf/port "/patients/"
-                        patient-id "/delete")
-                   {:handler handler
-                    :response-format :json})])))
+
 
 (rf/reg-event-fx
  :create-patient
@@ -179,6 +179,7 @@
      (let [_ (rf/dispatch
               [:last-event (str "Saving patient: "
                                 (:full_name query-parameters))])
+           _ (rf/dispatch [])
            handler (fn [_])
            error-handler (fn [el] (rf/dispatch [:last-event el]))
            response (POST (str conf/host ":" conf/port "/patients")
@@ -215,6 +216,23 @@
                                   "Can not update. Empty fields: "
                                   empty-query-parameters)])))))
 
+
+(rf/reg-event-fx
+ :delete-patient-with-id
+ (fn [db [_ patient-id]]
+   (let [_ (rf/dispatch
+            [:last-event (str "Deleting patient"
+                              patient-id)])
+         handler (fn [el] (rf/dispatch
+                           [:delete-patient-from-state
+                            patient-id]))
+         response (DELETE
+                   (str conf/host ":" conf/port "/patients/"
+                        patient-id "/delete")
+                   {:handler handler
+                    :response-format :json})])))
+
+
 (rf/reg-event-fx
  :master-patient-index
  (fn [db [_ query-parameters empty-values]]
@@ -238,3 +256,8 @@
                    (str "Save failed. Empty fields: "
                         empty-values)]))))
 
+(rf/reg-event-db
+ :set-patients-sorter
+ (fn [db [_ by]]
+   (println "By" by)
+   (assoc db :patients-sorter by)))

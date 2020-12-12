@@ -5,6 +5,7 @@
 ##### From the project dorectory 
  `make test-backend` to test backend
  `make backend` to start backend
+ `make frontend` to start frontend
 ##### You might need docker-compose command availabe on your machine.
 
 ##### Github actions are used to automate testing
