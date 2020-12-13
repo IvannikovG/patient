@@ -27,7 +27,9 @@
   (t/is (= (:status (handlers/get-patient-page
                      {:params {:id "1"}}
                      s/db-spec))
-           200)))
+           200))
+  (do (db/drop-patient-table s/db-spec)
+      (db/create-patient-table s/db-spec)))
 
 (t/deftest patient-master-index-page
   (do
@@ -78,6 +80,8 @@
                         s/db-spec))
               404))
      )
+  (do (db/drop-patient-table s/db-spec)
+      (db/create-patient-table s/db-spec))
   )
 
 (t/deftest search-update-delete-patients
@@ -119,6 +123,8 @@
                (= (:insurance (first  patient-anna-male)) "Updated Insurance")))
     (handlers/delete-patient-page {:params {:id "2"}} s/db-spec)
     (t/is (= nil (db/get-patient-by-id s/db-spec 2)))
-    ))
+    )
+  (do (db/drop-patient-table s/db-spec)
+      (db/create-patient-table s/db-spec)))
 
 (t/run-tests)

@@ -1,4 +1,4 @@
-(ns app.simple-subscriptions-test
+(ns app.integration-test
   (:require
    [re-frame.core :as rf]
    [clojure.test :as t]
@@ -39,7 +39,8 @@
             :errors nil
             :page :about
             :patients-sorter :id}))
-  (comment "Test change page")
+
+  (comment "Simple event-subscription")
 
   (t/is (= (do
              (rf/dispatch [:change-page :about])
@@ -133,7 +134,7 @@
         _ (Thread/sleep 500)
         ;; this assumes db is empty this tests to pass
         _ (rf/dispatch [:load-patients-list])
-        _ (Thread/sleep 100)]
+        _ (Thread/sleep 500)]
     (t/is (and (= (count (set @(rf/subscribe [:patients-list])))
                   patient-test-count))))
 
@@ -185,7 +186,7 @@
         _ (do (rf/dispatch [:delete-patient-with-id patient-id-1])
               (rf/dispatch [:delete-patient-with-id patient-id-2])
               (rf/dispatch [:delete-patient-with-id patient-id-3]))
-        _ (Thread/sleep 1000)
+        _ (Thread/sleep 1500)
         _ (rf/dispatch [:load-patients-list])
         _ (Thread/sleep 150)]
     (println patients-list)

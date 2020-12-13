@@ -16,3 +16,4 @@ jobs:
 
       - name: Run tests
         run: make test-backend
+        run: make test-frontend
