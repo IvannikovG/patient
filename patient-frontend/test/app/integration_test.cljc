@@ -136,7 +136,7 @@
              [:create-patient
               (last sample-patients-list) {}])
             (Thread/sleep 2000)
-            (rf/dispatch-sync [:load-patients-list])
+            (rf/dispatch [:load-patients-list])
             (Thread/sleep 2000))
         ]
         ;; this assumes db is empty this tests to pass
@@ -144,6 +144,7 @@
               (set @(rf/subscribe [:patients-list])))
                   patient-test-count)))
 
+  @(rf/subscribe [:patients-list])
   (comment "Update patient")
   (let [_ (rf/dispatch [:drop-db])
         _ (rf/dispatch [:load-patients-list])
@@ -152,7 +153,7 @@
                 "1997-07-07"])
               (rf/dispatch-sync
                [:add-fullname-query-parameter
-                "Frontend test full name"])
+                "Handsken"])
               (rf/dispatch-sync
                [:add-address-query-parameter
                 "Frontend Address"])
@@ -168,15 +169,16 @@
                         update-query-parameters])
         _ (Thread/sleep 1000)
         _ (rf/dispatch-sync [:drop-db])
-        _ (Thread/sleep 500)
+        _ (Thread/sleep 2500)
         ]
     (let [_ (rf/dispatch-sync [:set-patients-sorter :id])
           _ (rf/dispatch [:load-patients-with-query
-                          {:full_name "Frontend test full name"
+                          {:full_name "Handsken"
                            :gender "other"}])
-          _ (Thread/sleep 1000)
+          ; @(rf/subscribe [:filtered-patients-list])
+          _ (Thread/sleep 3000)
           test-patient (first @(rf/subscribe [:filtered-patients-list]))]
-      (t/is (= (:full_name test-patient) "Frontend test full name"))
+      (t/is (= (:full_name test-patient) "Handsken"))
       (t/is (= (:gender test-patient) "other"))
       (t/is (= ((complement nil?) (:birthdate test-patient))))
       (t/is (= (:address test-patient) "Frontend Address"))
@@ -202,3 +204,4 @@
     )
   )
 
+(t/run-tests)
