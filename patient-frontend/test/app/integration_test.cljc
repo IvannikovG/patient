@@ -135,9 +135,9 @@
             (rf/dispatch
              [:create-patient
               (last sample-patients-list) {}])
-            (Thread/sleep 1000)
+            (Thread/sleep 2000)
             (rf/dispatch-sync [:load-patients-list])
-            (Thread/sleep 500))
+            (Thread/sleep 2000))
         ]
         ;; this assumes db is empty this tests to pass
     (t/is (= (count
@@ -166,7 +166,7 @@
         _ (rf/dispatch [:update-patient {}
                              (:id (first @(rf/subscribe [:patients-list])))
                         update-query-parameters])
-        _ (Thread/sleep 500)
+        _ (Thread/sleep 1000)
         _ (rf/dispatch-sync [:drop-db])
         _ (Thread/sleep 500)
         ]
@@ -174,7 +174,7 @@
           _ (rf/dispatch [:load-patients-with-query
                           {:full_name "Frontend test full name"
                            :gender "other"}])
-          _ (Thread/sleep 500)
+          _ (Thread/sleep 1000)
           test-patient (first @(rf/subscribe [:filtered-patients-list]))]
       (t/is (= (:full_name test-patient) "Frontend test full name"))
       (t/is (= (:gender test-patient) "other"))
@@ -185,7 +185,7 @@
 
   (comment "Delete patient")
   (let [_ (rf/dispatch [:load-patients-list])
-        _ (Thread/sleep 500)
+        _ (Thread/sleep 1000)
         patients-list @(rf/subscribe [:patients-list])
         patient-id-1 (:id (first patients-list))
         patient-id-2 (:id (second patients-list))
@@ -193,9 +193,9 @@
         _ (do (rf/dispatch [:delete-patient-with-id patient-id-1])
               (rf/dispatch [:delete-patient-with-id patient-id-2])
               (rf/dispatch [:delete-patient-with-id patient-id-3])
-              (Thread/sleep 1500))
+              (Thread/sleep 2500))
         _ (rf/dispatch [:load-patients-list])
-        _ (Thread/sleep 500)]
+        _ (Thread/sleep 2000)]
     (println patients-list)
     (println patient-id-1 patient-id-2 patient-id-3)
     (t/is (= 0 (count @(rf/subscribe [:patients-list]))))
