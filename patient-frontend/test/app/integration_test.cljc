@@ -6,7 +6,6 @@
    [app.subscriptions :as s]
    ))
 
-
 (t/deftest subscriptions-test
   (rf/clear-subscription-cache!)
   (rf/dispatch-sync [:drop-db])
@@ -29,7 +28,6 @@
       :address "San Hose" :gender "female"
       :insurance "9002-1234-1234"}
      ])
-  (comment "Test initialize")
 
   (t/is (= (do
              (rf/dispatch-sync [:initialize])
@@ -39,48 +37,51 @@
             :page :about
             :patients-sorter :id}))
 
-  (comment "Simple event-subscription")
-
   (t/is (= (do
              (rf/dispatch-sync [:change-page :about])
              @(rf/subscribe [:page]))
            :about))
 
-    (t/is (= (do (rf/dispatch [:set-current-patient-id 1])
-                 (Thread/sleep 100)
+  (t/is (= (do (rf/dispatch-sync
+                [:set-current-patient-id 1])
                  @(rf/subscribe [:current-patient-id]))
              1))
 
-    (t/is (= (do (rf/dispatch [:last-event "Sample last event"])
-                 (Thread/sleep 100)
+  (t/is (= (do (rf/dispatch-sync
+                [:last-event "Sample last event"])
                  @(rf/subscribe [:last-event]))
              "Sample last event"))
 
-    (t/is (= (do (rf/dispatch [:add-id-query-parameter 11])
-                 (Thread/sleep 100)
+  (t/is (= (do (rf/dispatch-sync
+                [:add-id-query-parameter 11])
                  @(rf/subscribe [:patient-id]))
              11))
 
-    (t/is (= (do (rf/dispatch-sync [:add-fullname-query-parameter
+  (t/is (= (do (rf/dispatch-sync
+                [:add-fullname-query-parameter
                                "Full name X"])
                  @(rf/subscribe [:full_name]))
              "Full name X"))
 
-    (t/is (= (do (rf/dispatch-sync [:add-birthdate-query-parameter
+  (t/is (= (do (rf/dispatch-sync
+                [:add-birthdate-query-parameter
                                "Birthdate"])
                  @(rf/subscribe [:birthdate]))
              "Birthdate"))
 
-    (t/is (= (do (rf/dispatch-sync [:add-insurance-query-parameter
+  (t/is (= (do (rf/dispatch-sync
+                [:add-insurance-query-parameter
                                "Insurance"])
                  @(rf/subscribe [:insurance]))
              "Insurance"))
-    (t/is (= (do (rf/dispatch-sync [:add-address-query-parameter
+  (t/is (= (do (rf/dispatch-sync
+                [:add-address-query-parameter
                                "Address"])
                  @(rf/subscribe [:address]))
              "Address"))
 
-    (t/is (= (do (rf/dispatch-sync [:select-gender "female"])
+  (t/is (= (do (rf/dispatch-sync
+                [:select-gender "female"])
                  @(rf/subscribe [:gender]))
              "female"))
 
@@ -95,21 +96,28 @@
   (t/is (= sample-patients-list
              (do
                (rf/dispatch-sync [:drop-db])
-               (rf/dispatch-sync [:save-patients-into-state
+               (rf/dispatch-sync
+                [:save-patients-into-state
                              sample-patients-list])
                @(rf/subscribe [:patients-list]))))
 
   (t/is (= sample-patients-list
-           (do (rf/dispatch-sync [:save-filtered-patients-into-state
+           (do (rf/dispatch-sync
+                [:save-filtered-patients-into-state
                              sample-patients-list])
               @(rf/subscribe [:filtered-patients-list]))))
 
-  (t/is (and (false? @(rf/subscribe [:filtered-patients-not-searched?]))
-             (false? @(rf/subscribe [:filtered-patients-not-found?]))))
+  (t/is (and (false?
+              @(rf/subscribe
+                [:filtered-patients-not-searched?]))
+             (false?
+              @(rf/subscribe
+                [:filtered-patients-not-found?]))))
 
   (t/is (= true @(rf/subscribe [:patients-exist?])))
 
-  (t/is (= (do (rf/dispatch-sync [:put-errors-into-state "Errors"])
+  (t/is (= (do (rf/dispatch-sync
+                [:put-errors-into-state "Errors"])
                @(rf/subscribe [:form-errors]))
            "Errors"))
 
@@ -119,33 +127,42 @@
         _ (do
             (rf/dispatch [:drop-db])
             (rf/dispatch
-             [:create-patient (first sample-patients-list) {}])
+             [:create-patient
+              (first sample-patients-list) {}])
             (rf/dispatch
-             [:create-patient (second sample-patients-list) {}])
+             [:create-patient
+              (second sample-patients-list) {}])
             (rf/dispatch
-             [:create-patient (last sample-patients-list) {}])
+             [:create-patient
+              (last sample-patients-list) {}])
             (Thread/sleep 1000)
             (rf/dispatch-sync [:load-patients-list])
             (Thread/sleep 500))
         ]
         ;; this assumes db is empty this tests to pass
-    (t/is (= (count (set @(rf/subscribe [:patients-list])))
+    (t/is (= (count
+              (set @(rf/subscribe [:patients-list])))
                   patient-test-count)))
 
   (comment "Update patient")
   (let [_ (rf/dispatch [:drop-db])
         _ (rf/dispatch [:load-patients-list])
         _ (do (rf/dispatch-sync
-               [:add-birthdate-query-parameter "1997-07-07"])
+               [:add-birthdate-query-parameter
+                "1997-07-07"])
               (rf/dispatch-sync
-               [:add-fullname-query-parameter "Frontend test full name"])
+               [:add-fullname-query-parameter
+                "Frontend test full name"])
               (rf/dispatch-sync
-               [:add-address-query-parameter "Frontend Address"])
+               [:add-address-query-parameter
+                "Frontend Address"])
               (rf/dispatch-sync
-               [:add-insurance-query-parameter "Frontend Insurance"])
+               [:add-insurance-query-parameter
+                "Frontend Insurance"])
               (rf/dispatch-sync
                [:select-gender "other"]))
-        update-query-parameters @(rf/subscribe [:query-parameters])
+        update-query-parameters @(rf/subscribe
+                                  [:query-parameters])
         _ (rf/dispatch [:update-patient {}
                              (:id (first @(rf/subscribe [:patients-list])))
                         update-query-parameters])
