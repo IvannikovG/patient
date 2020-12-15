@@ -33,7 +33,6 @@
    [:created_at "TIMESTAMPTZ"]])
 
 
-
 ;; FUNCTIONS for TABLES ;;
 
 (def patient-table-ddl
@@ -101,5 +100,8 @@
 
 ;; Patient generator
 (defn save-n-patients-to-db [db-spec n]
-  (take n (repeatedly #(save-patient-to-db db-spec (utils/sample-patient)))))
+  (take n (repeatedly #(save-patient-to-db
+                        db-spec
+                        (utils/sample-patient)))))
 
+(save-n-patients-to-db s/db-spec 5)

@@ -1,5 +1,6 @@
 (ns app.router
-  (:require [compojure.core :refer [GET POST DELETE defroutes routes context]]
+  (:require [compojure.core :refer
+             [GET POST DELETE defroutes routes context]]
             [ring.middleware.reload :refer [wrap-reload]]
             [ring.adapter.jetty :refer [run-jetty]]
             [ring.middleware.json :refer :all]
@@ -9,6 +10,7 @@
             [app.handlers :as h]
             [app.utils :as u]
             [app.specs :as specs]
+            [app.db :as db]
             [clj-http.client :as client]
             [ring.logger :as logger]))
 
@@ -97,7 +99,13 @@
        (wrap-json-response {:keywords? true})
        (wrap-json-body {:keywords? true})))
 
+(defn initialize-app []
+  (db/create-patient-table specs/db-spec))
+
 (defn main [opts]
-  (run-jetty (-> (wrapped-app)
-                 (wrap-cors #".*"))
-             {:port 7500 :join? false}))
+  (println "Started 1")
+   ;(do (initialize-app)
+       (run-jetty (-> (wrapped-app)
+                      (wrap-cors #".*"))
+                  {:port 7500 :join? false}))
+;)

@@ -30,4 +30,4 @@
   (t/is (= (r/correct-handler {:uri "utter trash" :request-method :get}) h/page-404))
   )
 
-(t/run-tests)
+#_(t/run-tests)

@@ -100,7 +100,7 @@
   "Generates a random petient"
   {:full_name (random-string 5)
    :gender (random-string 5)
-   :birthdate (random-date-string)
+   :birthdate (random-sql-date)
    :address (random-string 5)
    :insurance (random-string 5)
    })

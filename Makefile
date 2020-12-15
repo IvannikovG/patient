@@ -14,7 +14,7 @@ test-frontend:
 	docker-compose down && docker-compose up -d &&	cd patient-frontend && clojure -M:test -d test
 
 backend:
-	docker-compose down && docker-compose up -d &&	cd patient-api &&	clojure -X app.router/main
+	docker-compose down && docker-compose up -d
 
 frontend:
 	cd patient-frontend && clj -A:fig -b app --repl

@@ -190,8 +190,9 @@
                            (ajax/json-response-format
                             {:keywords? true})
                            :params query-parameters})])
-     (rf/dispatch [:last-event
-                   (str "Save failed. Empty fields: " empty-values)]))))
+     (rf/dispatch
+      [:last-event
+       (str "Save failed. Empty fields: " empty-values)]))))
 
 (rf/reg-event-fx
  :update-patient
