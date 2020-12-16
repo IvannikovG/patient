@@ -9,8 +9,7 @@
 
 (rf/reg-event-db
  :drop-db
- (fn [_ _]
-   (println "DB with all state was DROPPED!")
+ (fn [db _]
    {}))
 
 (rf/reg-event-db
@@ -154,7 +153,6 @@
 (rf/reg-event-fx
  :load-patients-with-query
  (fn [db [_ query-parameters]]
-   (println (h/remove-nils-and-empty-strings query-parameters))
    (let [clean-query-parameters
          (h/remove-nils-and-empty-strings query-parameters)
          handler (fn [el]
@@ -169,8 +167,6 @@
                         :response-format :json
                         :params clean-query-parameters})]
      )))
-
-
 
 (rf/reg-event-fx
  :create-patient
@@ -262,3 +258,5 @@
  (fn [db [_ by]]
    (println "By" by)
    (assoc db :patients-sorter by)))
+
+

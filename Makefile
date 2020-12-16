@@ -11,7 +11,7 @@ test-backend:
 	docker-compose down && docker-compose up -d &&	cd patient-api && clojure -M:test -d test
 
 test-frontend:
-	docker-compose down && docker-compose up -d &&	cd patient-frontend && clojure -M:test -d test
+	docker-compose down && docker-compose up -d &&	cd patient-frontend && clojure -M:test -d test -n re-frame-new
 
 backend:
 	docker-compose down && docker-compose up -d

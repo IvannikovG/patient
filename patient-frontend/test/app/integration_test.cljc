@@ -203,5 +203,7 @@
     (t/is (= 0 (count @(rf/subscribe [:patients-list]))))
     )
   )
-
 (t/run-tests)
+
+(rf/dispatch [:load-patients-list])
+@(rf/subscribe [:patients-list])

@@ -106,3 +106,4 @@
  :patients-sorter
  (fn [db _]
    (:patients-sorter db)))
+
