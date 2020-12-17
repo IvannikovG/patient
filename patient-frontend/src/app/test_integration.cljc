@@ -1,4 +1,4 @@
-(ns app.re-frame-new
+(ns app.test-integration
   (:require
    [clojure.test :as t]
    [day8.re-frame.test :as rf-test]
