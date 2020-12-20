@@ -1,12 +1,13 @@
-(ns app.integration-test
-  (:require
-   [re-frame.core :as rf]
-   [clojure.test :as t]
-   [app.events :as e]
-   [app.subscriptions :as s]
-   ))
-
+(ns app.integration-test)
 (comment
+  (ns app.integration-test
+    (:require
+     [re-frame.core :as rf]
+     [clojure.test :as t]
+     [app.events :as e]
+     [app.subscriptions :as s]
+     ))
+
   (t/deftest subscriptions-test
     (rf/clear-subscription-cache!)
     (rf/dispatch-sync [:drop-db])

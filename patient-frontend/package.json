@@ -1,0 +1,9 @@
+{
+  "name": "patient-frontend",
+  "version": "1.0.0",
+  "main": "index.js",
+  "license": "MIT",
+  "devDependencies": {
+    "jsdom": "^16.4.0"
+  }
+}

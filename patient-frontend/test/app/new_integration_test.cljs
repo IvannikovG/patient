@@ -7,6 +7,11 @@
    app.subscriptions))
 
 
+(deftest a
+  (is (= 1 1)))
+
+(deftest b
+  (is (= 2 2)))
 
 (def sample-patients-list
   [{:id 1 :full_name "Georgii Ivannikov"
@@ -149,14 +154,13 @@
                           {:full_name "Gachi Muchi"}])
                         (rf-test/wait-for
                          [:update-patient]
-                         (rf/dispatch [:load-patients-list])
+                         (rf/dispatch [:load-all-patients])
                          (rf-test/wait-for
-                          [:load-patients-list]
+                          [:load-all-patients]
                           (is (= (:full_name
                                   (first (filter #(= (:id %) 1)
-                                                 @patients))
-                                  "Gachi Muchi")))))))))
-  )
+                                                 @patients))))
+                                  "Gachi Muchi"))))))))
 
 
 (deftest requests-test-delete

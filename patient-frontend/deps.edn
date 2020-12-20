@@ -24,7 +24,7 @@
 
  :aliases {:fig
            {:main-opts ["-m" "figwheel.main"]}
-           :test {:extra-paths ["test"]
+           :test {:extra-paths ["test" "clj-test"]
                   :extra-deps
                   {com.cognitect/test-runner
                    {:git/url
@@ -34,5 +34,7 @@
            :test-front {:main-opts ["-m" "cljs.main"
                                     "-c" "app.test_runner"
                                     "-r"]}
+           :test-headless {:extra-deps {olical/cljs-test-runner {:mvn/version "3.8.0"}}
+                           :main-opts ["-m" "cljs-test-runner.main"]}
            }
  }
