@@ -11,7 +11,7 @@ test-backend:
 	docker-compose down && docker-compose up -d &&	cd patient-api && clojure -M:test -d test
 
 test-frontend:
-	docker-compose down && docker-compose up -d && cd patient-frontend && clojure -M:test -d test -n app.helpers-test -n app.specs-test && clojure -m figwheel.main -m app.test-runner
+	docker-compose down && docker-compose up -d && cd patient-frontend && clojure -M:test -d clj-test -n app.helpers-test -n app.specs-test && clojure -Atest-headless -x chrome-headless
 
 backend:
 	docker-compose down && docker-compose up -d

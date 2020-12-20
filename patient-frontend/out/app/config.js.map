@@ -1,1 +1,0 @@
-{"version":3,"file":"\/Users\/georgii\/Documents\/clojure\/patient\/patient-frontend\/out\/app\/config.js","sources":["config.cljc"],"lineCount":7,"mappings":";AAAA;;AAEA,kBAAA,lBAAKA;AACL,kBAAA,lBAAKC","names":["app.config\/host","app.config\/port"]}
