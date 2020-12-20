@@ -1,0 +1,1 @@
+{:browser-repl true, :main app.test_runner, :output-to "out/main.js", :output-dir "out", :aot-cache true}

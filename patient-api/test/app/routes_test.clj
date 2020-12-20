@@ -113,12 +113,12 @@
        db-spec))
   (let [patients-annas
         (:body (handlers/search-patients-page
-                {:query-params
+                {:query-string
                  {:full_name "Anna Petrovna"}}
                 db-spec))
         patient-anna-male
         (:body (handlers/search-patients-page
-                {:query-params
+                {:query-string
                  {:full_name "Anna Petrovna"
                   :gender "male"}}
                 db-spec))]

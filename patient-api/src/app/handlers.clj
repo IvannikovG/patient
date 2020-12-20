@@ -51,11 +51,14 @@
     ))
 
 (defn search-patients-page [request db-spec]
-  (let [params (:query-params request)
+  (let [params (:query-string request)
         cleaned-params (u/clean-request-params
                         (clojure.walk/keywordize-keys
                          params))
         patients (db/get-patients-by-parameters db-spec cleaned-params)]
+    (println cleaned-params)
+    (println "++++++++++++++++++++++++++++++++++++++++++++++++++++++++")
+    (println params)
     {:status 200
      :headers {"content-type" "application-json"}
      :body patients

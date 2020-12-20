@@ -72,10 +72,6 @@
     ]
    ]])
 
-(defn load-all-patients-button []
-  [:button.button {:on-click #(rf/dispatch
-                        [:load-patients-list])}
-   "Load patients"])
 
 (defn load-filtered-patients-button []
   [:button.button {:on-click #(rf/dispatch
@@ -174,7 +170,8 @@
 (defn filtered-patients-list []
   (let [patients-not-found?
         @(rf/subscribe [:filtered-patients-not-found?])
-        patients-not-searched? @(rf/subscribe [:filtered-patients-not-searched?])
+        patients-not-searched? @(rf/subscribe
+                                 [:filtered-patients-not-searched?])
         patients @(rf/subscribe [:filtered-patients-list])]
     (cond
       patients-not-searched? nil
@@ -186,7 +183,7 @@
       )))
 
 (defn all-patients-list []
-  (let [_ (rf/dispatch [:load-patients-list])
+  (let [_ (rf/dispatch [:load-all-patients])
         patients @(rf/subscribe [:patients-list])
         should-render-patients? @(rf/subscribe [:patients-exist?])]
     (if should-render-patients?
@@ -213,7 +210,8 @@
    [:hr]
    [button]
    [:div.last-event
-    [last-event-component]]
+    [last-event-component]
+    ]
    ])
 
 (defn navigation []

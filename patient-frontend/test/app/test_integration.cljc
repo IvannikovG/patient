@@ -134,30 +134,41 @@
   )
 
 
-(t/deftest requests-test-create-update
- (rf-test/run-test-async
-  (let [patients (rf/subscribe [:patients-list])
-        filtered-patients (rf/subscribe [:filtered-patients-list])]
-     (rf/dispatch [:create-patient
-                   (first sample-patients-list) {}])
-     (rf-test/wait-for [:create-patient]
-                       (rf/dispatch [:create-patient
-                                     (second sample-patients-list) {}])
-                       (rf-test/wait-for
-                        [:create-patient]
-                        (rf/dispatch
-                         [:update-patient {} 1
-                          {:full_name "Gachi Muchi"}])
-                        (rf-test/wait-for
-                         [:update-patient]
-                         (rf/dispatch [:load-patients-list])
+(t/deftest requests-test-create-update-find
+  (doseq []
+    (rf-test/run-test-async
+     (let [patients (rf/subscribe [:patients-list])]
+       (rf/dispatch [:create-patient
+                     (first sample-patients-list) {}])
+       (rf-test/wait-for [:create-patient]
+                         (rf/dispatch [:create-patient
+                                       (second sample-patients-list)
+                                       {}])
                          (rf-test/wait-for
-                          [:load-patients-list]
-                          (t/is (= (:full_name
-                                    (first (filter #(= (:id %) 1)
-                                                   @patients))
-                                    "Gachi Muchi")))))))))
-  )
+                          [:create-patient]
+                          (rf/dispatch
+                           [:update-patient {} 1
+                            {:full_name "Gachi Muchi"}])
+                          (rf-test/wait-for
+                           [:update-patient]
+                           (rf/dispatch [:load-patients-list])
+                           (rf-test/wait-for
+                            [:load-patients-list]
+                            (t/is (= (:full_name
+                                      (first (filter #(= (:id %) 1)
+                                                     @patients))
+                                      "Gachi Muchi")))))))))
+   #_ (rf-test/run-test-async
+     (let [filtered-patients (rf/subscribe [:filtered-patients-list])]
+       (rf/dispatch [:load-patients-with-query {:full_name "Gachi Muchi"}])
+       (rf-test/wait-for
+        [:load-patients-with-query]
+        (rf-test/wait-for
+         [:save-filtered-patients-into-state]
+         (t/is (= (:full_name (first @filtered-patients))
+                  "Gachi Muchi"))))))
+    )
 
+  )
 
 (t/run-tests)
