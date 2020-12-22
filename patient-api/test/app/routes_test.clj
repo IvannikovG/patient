@@ -9,7 +9,7 @@
 (def db-spec s/db-spec-testing)
 
 (t/deftest failing-page
-  (t/is (= ((router/app-2 db-spec)
+  (t/is (= ((router/app db-spec)
             (mock/request :get
                           "/random-string"))
            {:status 404
