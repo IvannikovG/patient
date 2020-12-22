@@ -15,6 +15,10 @@
             [ring.logger :as logger]))
 
 
+;; (def endpoints-2
+;;   ["/patient"
+;;    ["/" {:method {:get}}]])
+
 (def endpoints
   {:get {:all h/patients-page
          :find h/search-patients-page
@@ -55,7 +59,7 @@
      (filter (complement nil?)
              (map u/str-to-int splitted)))))
 
-(defn app-2 [& configs]
+(defn app [& configs]
   (fn [request]
     (let [db-spec (first configs)
           handler (correct-handler request)
@@ -64,7 +68,7 @@
       (handler request-with-id db-spec))))
 
 (defn reloadable-app []
-  (wrap-reload (app-2 specs/db-spec)))
+  (wrap-reload (app specs/db-spec)))
 
 (defn log-to-file [func]
   (fn [& args]
@@ -75,7 +79,6 @@
   (fn [& args]
     (println "=============")
     (println "=============")
-    (println func)
     (println "=============")
     (println "=============")
     (println "=============")
@@ -104,8 +107,9 @@
 
 (defn main [opts]
   (println "Started 1")
-   ;(do (initialize-app)
        (run-jetty (-> (wrapped-app)
                       (wrap-cors #".*"))
                   {:port 7500 :join? false}))
-;)
+
+
+

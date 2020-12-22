@@ -5,7 +5,7 @@
             [app.helpers :as h]
             [app.config :as conf]
             [ajax.core :as ajax]
-            [day8.re-frame.http-fx]
+            #?(:cljs [day8.re-frame.http-fx])
             ))
 
 (rf/reg-event-db

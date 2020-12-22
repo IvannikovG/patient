@@ -1,7 +1,7 @@
 (ns app.test-runner
   (:require  [cljs.test :refer-macros [run-tests]]
              [figwheel.main.async-result :as async-result]
-             [app.new-integration-test]))
+             [app.integration-test]))
 
 
 (defmethod cljs.test/report [:cljs.test/default :end-run-tests] [m]
@@ -11,7 +11,7 @@
 
 
 (defn -main [& args]
-  (run-tests 'app.new-integration-test)
+  (run-tests 'app.integration-test)
   [:figwheel.main.async-result/wait 25000]
  )
 
